@@ -8,6 +8,7 @@ import io.entomology.entomology.entity.SummonedBeeEntity;
 import io.entomology.entomology.entity.SummonedCaveSpiderEntity;
 import io.entomology.entomology.entity.SummonedCockroach;
 import io.entomology.entomology.entity.SummonedIceSpiderEntity;
+import io.entomology.entomology.entity.SummonedMosquitoEntity;
 import io.entomology.entomology.entity.SummonedSilverfishEntity;
 import io.entomology.entomology.entity.SummonedSpiderEntity;
 import io.entomology.entomology.entity.SwarmFireflyProjectile;
@@ -40,6 +41,11 @@ public class EntityRegistry
     // Only registered when alexsmobs is installed; null otherwise.
     public static final RegistryObject<EntityType<SummonedCockroach>> SUMMONED_COCKROACH = SpellRegistry.isAlexsMobsLoaded()
             ? register("summoned_cockroach", SummonedCockroach::new, 0.7F, 0.3F)
+            : null;
+    // Alex's Mobs crimson mosquito: airborne, so register its in-flight size (1.2 x 1.8).
+    // Only registered when alexsmobs is installed; null otherwise.
+    public static final RegistryObject<EntityType<SummonedMosquitoEntity>> SUMMONED_MOSQUITO = SpellRegistry.isAlexsMobsLoaded()
+            ? register("summoned_mosquito", SummonedMosquitoEntity::new, 1.2F, 1.8F)
             : null;
 
     public static void init()

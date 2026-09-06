@@ -66,5 +66,10 @@ public class AttributeRegistry
             event.put(EntityRegistry.SUMMONED_COCKROACH.get(),
                     com.github.alexthe666.alexsmobs.entity.EntityCockroach.bakeAttributes().build());
         }
+        if (EntityRegistry.SUMMONED_MOSQUITO != null)
+        {
+            event.put(EntityRegistry.SUMMONED_MOSQUITO.get(),
+                    com.github.alexthe666.alexsmobs.entity.EntityCrimsonMosquito.bakeAttributes().build());
+        }
     }
 }

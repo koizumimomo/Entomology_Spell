@@ -11,6 +11,7 @@ import io.entomology.entomology.spells.SpiderNestSpell;
 import io.entomology.entomology.spells.SummonBeeSwarmSpell;
 import io.entomology.entomology.spells.SummonCockroachDanceSpell;
 import io.entomology.entomology.spells.SummonIceSpiderSpell;
+import io.entomology.entomology.spells.SummonMosquitoSwarmSpell;
 import io.entomology.entomology.spells.SwarmAegisSpell;
 import io.entomology.entomology.spells.WebEntangleSpell;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -42,6 +43,10 @@ public class SpellRegistry
     // Alex's Mobs optional integration: only offer the dance troupe if the mod is present
     public static final RegistryObject<AbstractSpell> SUMMON_COCKROACH_DANCE_SPELL = isAlexsMobsLoaded()
             ? SPELLS.register("summon_cockroach_dance", SummonCockroachDanceSpell::new)
+            : null;
+    // Alex's Mobs optional integration: crimson mosquito swarm (heal-on-hit support)
+    public static final RegistryObject<AbstractSpell> SUMMON_MOSQUITO_SWARM_SPELL = isAlexsMobsLoaded()
+            ? SPELLS.register("summon_mosquito_swarm", SummonMosquitoSwarmSpell::new)
             : null;
 
     public static boolean isAlexsMobsLoaded()
