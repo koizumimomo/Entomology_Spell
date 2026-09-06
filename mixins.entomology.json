@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "io.entomology.entomology.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "entomology.refmap.json",
+  "mixins": [
+    "LivingEntityMixin",
+    "BeeMixin"
+  ],
+  "client": [],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

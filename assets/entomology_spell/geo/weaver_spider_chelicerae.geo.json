@@ -1,0 +1,43 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 3.5,
+				"visible_bounds_offset": [0, 1.25, 0]
+			},
+			"bones": [
+				{
+					"name": "bipedBody",
+					"pivot": [0, 24, 0]
+				},
+				{
+					"name": "armorBody",
+					"parent": "bipedBody",
+					"pivot": [0, 24, 0]
+				},
+				{
+					"name": "bone",
+					"parent": "armorBody",
+					"pivot": [-2.6, 19.4, 1.8],
+					"cubes": [
+						{"origin": [-3.6, 18.4, 0.8], "size": [2, 9, 2], "pivot": [-2.6, 19.4, 1.8], "rotation": [-125.87062, -37.13549, 123.82124], "uv": [56, 0]},
+						{"origin": [-8.6, 27.7, 5.1], "size": [2, 8, 2], "pivot": [-7.6, 28.7, 6.1], "rotation": [142.38407, 11.3229, 73.93722], "uv": [55, 2]},
+						{"origin": [-5.4, 24.6, 6.1], "size": [2, 6, 2], "pivot": [-4.4, 25.6, 7.1], "rotation": [166.15111, 26.34212, 132.3497], "uv": [55, 4]},
+						{"origin": [1.6, 18.4, 0.8], "size": [2, 9, 2], "pivot": [2.6, 19.4, 1.8], "rotation": [-125.87062, 37.13549, -123.82124], "uv": [56, 0], "mirror": true},
+						{"origin": [3.4, 24.6, 6.1], "size": [2, 6, 2], "pivot": [4.4, 25.6, 7.1], "rotation": [166.15111, -26.34212, -132.3497], "uv": [56, 3], "mirror": true},
+						{"origin": [6.6, 27.7, 5.1], "size": [2, 8, 2], "pivot": [7.6, 28.7, 6.1], "rotation": [142.38407, -11.3229, -73.93722], "uv": [55, 0], "mirror": true},
+						{"origin": [-13.4, 27, 0.5], "size": [2, 8, 2], "pivot": [-12.4, 28, 1.5], "rotation": [66.90433, -27.65071, 74.94571], "uv": [56, 3]},
+						{"origin": [-8.6, 24.9, -5.5], "size": [1, 6, 1], "pivot": [-8.6, 25.9, -4.5], "rotation": [90.05346, -64.86939, 57.19738], "uv": [60, 0]},
+						{"origin": [7.6, 24.9, -5.5], "size": [1, 6, 1], "pivot": [8.6, 25.9, -4.5], "rotation": [90.05346, 64.86939, -57.19738], "uv": [59, 3]},
+						{"origin": [11.4, 27, 0.5], "size": [2, 8, 2], "pivot": [12.4, 28, 1.5], "rotation": [66.90433, 27.65071, -74.94571], "uv": [55, 2], "mirror": true}
+					]
+				}
+			]
+		}
+	]
+}
