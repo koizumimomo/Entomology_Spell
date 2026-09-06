@@ -24,6 +24,8 @@
   "spell.entomology_spell.summon_ice_spider.guide": "Summons a loyal frost spider that protects you and attacks your targets. Right-click the spider to ride it and steer it yourself. It climbs walls, pounces on enemies and web-grapples them in ice",
   "spell.entomology_spell.summon_cockroach_dance": "Summon Cockroach Dance Troupe",
   "spell.entomology_spell.summon_cockroach_dance.guide": "Summons a troupe of maraca-shaking cockroaches that dance around you. Their rhythm pulses regen, speed, haste and strength onto you and your allies nearby. Higher levels summon more roaches and stronger beats",
+  "spell.entomology_spell.summon_mosquito_swarm": "Summon Mosquito Swarm",
+  "spell.entomology_spell.summon_mosquito_swarm.guide": "Summons a swarm of crimson mosquitoes that dive-bomb targets for 20 seconds. They hunt other players first, then hostile mobs; every hit they land heals your other summons nearby. Higher levels summon more mosquitoes",
 
   "entity.entomology_spell.spider_nest": "Spider Nest",
   "entity.entomology_spell.spider_nest.description": "An attackable spider nest entity that periodically spawns spiders to defend the area",
@@ -34,6 +36,7 @@
   "entity.entomology_spell.summoned_cave_spider": "Summoned Cave Spider",
   "entity.entomology_spell.summoned_ice_spider": "Summoned Frost Spider",
   "entity.entomology_spell.summoned_cockroach": "Summoned Cockroach Dancer",
+  "entity.entomology_spell.summoned_mosquito": "Summoned Crimson Mosquito",
   "entity.entomology_spell.swarm_firefly": "Swarm Firefly",
 
   "effect.entomology_spell.insect_pheromone": "Insect Pheromone",
@@ -93,6 +96,8 @@
   "ui.entomology_spell.ice_spider_ride": "Right-click to ride",
   "ui.entomology_spell.cockroach_troupe": "Troupe Size: %s",
   "ui.entomology_spell.cockroach_aura": "Rhythm Aura: Regeneration, Speed, Haste & Strength",
+  "ui.entomology_spell.mosquito_lifesteal": "Blood Symbiosis: heals nearby allied summons when dealing damage",
+  "ui.entomology_spell.mosquito_duration": "Duration: 20 seconds",
 
   "attribute.entomology_spell.insect_spell_power": "Insect Spell Power",
   "attribute.entomology_spell.insect_magic_resist": "Insect Magic Resistance",

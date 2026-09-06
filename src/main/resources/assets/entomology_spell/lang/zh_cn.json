@@ -24,6 +24,8 @@
   "spell.entomology_spell.summon_ice_spider.guide": "召唤一只忠诚的冰霜蜘蛛保护你并攻击你的目标。右键点击蜘蛛即可骑乘并亲自操控方向。它会攀爬墙壁、扑咬敌人并用蛛网将其冰封擒拿",
   "spell.entomology_spell.summon_cockroach_dance": "召唤蟑螂舞队",
   "spell.entomology_spell.summon_cockroach_dance.guide": "召唤一队摇着沙锤的蟑螂在你身边跳舞。它们的节奏会向周围的你和友军脉冲式施加生命恢复、速度、急迫与力量。等级越高舞队越大、节奏越强",
+  "spell.entomology_spell.summon_mosquito_swarm": "召唤蚊群",
+  "spell.entomology_spell.summon_mosquito_swarm.guide": "召唤数只绯红蚊子俯冲猎杀，持续20秒。蚊子优先追猎附近的其他玩家，其次是敌对生物；它们每次造成伤害都会为附近同属于你的召唤物恢复生命。等级越高蚊群越多",
   
   "entity.entomology_spell.spider_nest": "蛛巢",
   "entity.entomology_spell.spider_nest.description": "可攻击的蛛巢实体，周期性地生成蜘蛛来防御区域",
@@ -34,6 +36,7 @@
   "entity.entomology_spell.summoned_cave_spider": "被召唤的洞穴蜘蛛",
   "entity.entomology_spell.summoned_ice_spider": "被召唤的冰霜蜘蛛",
   "entity.entomology_spell.summoned_cockroach": "被召唤的舞王蟑螂",
+  "entity.entomology_spell.summoned_mosquito": "被召唤的绯红蚊子",
   "entity.entomology_spell.swarm_firefly": "虫群萤火虫",
   
   "effect.entomology_spell.insect_pheromone": "昆虫信息素",
@@ -93,6 +96,8 @@
   "ui.entomology_spell.ice_spider_ride": "右键点击可骑乘",
   "ui.entomology_spell.cockroach_troupe": "舞队规模：%s",
   "ui.entomology_spell.cockroach_aura": "节奏光环：生命恢复、速度、急迫与力量",
+  "ui.entomology_spell.mosquito_lifesteal": "吸血共生：造成伤害时治疗附近的友方召唤物",
+  "ui.entomology_spell.mosquito_duration": "存在时间：20秒",
 
   "attribute.entomology_spell.insect_spell_power": "虫群法术强度",
   "attribute.entomology_spell.insect_magic_resist": "虫群魔法抗性",
