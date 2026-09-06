@@ -7,9 +7,9 @@ An addon mod for **Iron's Spells 'n Spellbooks** that adds a brand-new **Swarm (
 ## 下载 Download
 
 - 最新版本 Latest: [Releases](../../releases) （v1.2.2）
-- [CurseForge](https://www.curseforge.com/minecraft/mc-mods/es-entomology-spell)
-- [Modrinth](https://modrinth.com/mod/esentomology_spell)
-- 其他链接 Other links: [Bilibili](https://space.bilibili.com/26216524)
+- CurseForge: 待添加 TODO
+- Modrinth: 待添加 TODO
+- 其他链接 Other links: 待添加 TODO
 
 ## 功能一览 Features
 
@@ -58,4 +58,17 @@ An addon mod for **Iron's Spells 'n Spellbooks** that adds a brand-new **Swarm (
 
 ## 许可证 License
 
-All Rights Reserved（保留所有权利）。
+本项目采用 **GNU General Public License v3.0 (GPL-3.0)**。
+
+本许可证要求源自：本模组的代码直接继承并复用了 [Alex's Mobs](https://github.com/AlexModGuy/AlexsMobs)（GPL-3.0-only）的实体类（`EntityCockroach`、`RenderCockroach`），根据 GPL-3.0 的传染性条款，衍生作品必须以 GPL-3.0 发布。
+
+完整许可证文本见 [LICENSE](./LICENSE) 文件。
+
+### 依赖许可证
+
+| 依赖 | 许可证 |
+|---|---|
+| Alex's Mobs | GPL-3.0-only |
+| Iron's Spells 'n Spellbooks | All Rights Reserved（允许作为依赖编写 addon） |
+| GeckoLib | MIT |
+| Curios | MIT |
