@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "GPG",
+    "RBS",
+    "GCG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "P": {
+      "item": "minecraft:spore_blossom"
+    },
+    "R": {
+      "item": "entomology_spell:royal_jelly"
+    },
+    "B": {
+      "item": "minecraft:book"
+    },
+    "S": {
+      "item": "entomology_spell:spider_venom_gland"
+    },
+    "C": {
+      "item": "minecraft:cobweb"
+    }
+  },
+  "result": {
+    "item": "entomology_spell:swarm_spell_book",
+    "count": 1
+  }
+}

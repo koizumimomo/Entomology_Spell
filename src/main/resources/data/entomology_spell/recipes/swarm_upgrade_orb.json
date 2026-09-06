@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RRR",
+    "ROR",
+    "RRR"
+  ],
+  "key": {
+    "O": {
+      "item": "irons_spellbooks:upgrade_orb"
+    },
+    "R": {
+      "item": "entomology_spell:swarm_rune"
+    }
+  },
+  "result": {
+    "item": "entomology_spell:swarm_upgrade_orb",
+    "count": 1
+  }
+}

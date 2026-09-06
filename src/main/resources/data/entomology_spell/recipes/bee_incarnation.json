@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "template": {
+    "item": "entomology_spell:insect_crystal"
+  },
+  "base": {
+    "item": "irons_spellbooks:netherite_mage_leggings"
+  },
+  "addition": {
+    "item": "entomology_spell:royal_jelly"
+  },
+  "result": {
+    "item": "entomology_spell:bee_incarnation"
+  }
+}

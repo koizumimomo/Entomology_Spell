@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "irons_spellbooks:tarnished_helmet"
+    },
+    {
+      "item": "entomology_spell:royal_jelly"
+    }
+  ],
+  "result": {
+    "item": "entomology_spell:queen_bee_crown",
+    "count": 1
+  }
+}

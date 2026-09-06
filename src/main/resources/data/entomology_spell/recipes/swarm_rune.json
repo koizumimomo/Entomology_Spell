@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "FFF",
+    "FRF",
+    "FFF"
+  ],
+  "key": {
+    "F": {
+      "tag": "entomology_spell:insect_focus"
+    },
+    "R": {
+      "item": "irons_spellbooks:blank_rune"
+    }
+  },
+  "result": {
+    "item": "entomology_spell:swarm_rune",
+    "count": 1
+  }
+}
