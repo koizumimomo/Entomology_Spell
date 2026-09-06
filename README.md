@@ -1,86 +1,88 @@
 # [ES] Entomology Spell 虫群与我
 
-为 **Iron's Spells 'n Spellbooks（铁魔法与法术书）** 添加全新派系「虫群（Swarm / Insect）」的附属模组。操纵蜂群、蛛群与蟑螂大军，用虫子的方式解决战斗。
+**English** | [简体中文](./README_zh-CN.md)
 
 An addon mod for **Iron's Spells 'n Spellbooks** that adds a brand-new **Swarm (Insect)** school of magic to Minecraft 1.20.1 (Forge). Command bees, spiders and cockroaches to fight for you.
 
-## 下载 Download
+## Download
 
-- 最新版本 Latest: [Releases](../../releases) 
-- [CurseForge](https://www.curseforge.com/minecraft/mc-mods/es-entomology-spell)
-- [Modrinth](https://modrinth.com/mod/esentomology_spell)
-- 其他链接 Other links: [Bilibili](https://space.bilibili.com/26216524)
+- Latest: [Releases](../../releases)
+- CurseForge: [es-entomology-spell](https://www.curseforge.com/minecraft/mc-mods/es-entomology-spell)
+- Modrinth: [esentomology_spell](https://modrinth.com/mod/esentomology_spell)
+- Other links: [Bilibili](https://space.bilibili.com/26216524)
 
-## 功能一览 Features
+## Features
 
-**法术 Spells**
+**Spells**
 
-| 法术 Spell | 说明 |
+| Spell | Description |
 |---|---|
-| 昆虫信息素 Insect Pheromone | 标记生物，使其被视为节肢生物 |
-| 虫群护体 Swarm Aegis | 防护虫群减伤，攻击时召唤萤火虫助战 |
-| 召唤蜂群 Summon Bee Swarm | 蜂群攻击你最后攻击过的目标，叠加蜂群之怒 |
-| 混乱蜂刺 Chaotic Stinger | 召唤蜂蜇刺附带中毒/凋零 |
-| 寄生虫 Parasite | 潜伏寄生，爆发时孵化蠹虫并引来虫群 |
-| 蛛网缠绕 Web Entangle | 蛛网定身，可被破坏解救 |
-| 小蜂刺 Bee Stinger | 高速蜂刺投射物 |
-| 蜂蜂落幕曲 Bee Requiem | 三只自爆蜂俯冲目标 |
-| 蜜蜂预警阵 Bee Alarm | 固定炮台蜂，自动攻击范围内敌人 |
-| 蛛巢 Spider Nest | 周期性生成蜘蛛防御区域，附近野生蜘蛛也会加入协防 |
-| 召唤冰霜蜘蛛 Summon Frost Spider | 可骑乘的冰霜蜘蛛战宠 |
-| 召唤蟑螂舞队 Summon Cockroach Dance Troupe | 摇沙锤的蟑螂舞队提供节奏光环 |
+| Insect Pheromone | Marks a creature (or yourself) so it is treated as an arthropod |
+| Swarm Aegis | A protective swarm reduces incoming damage; fireflies strike your targets when you attack |
+| Summon Bee Swarm | Bees attack the last creature you struck; your attacks stack Swarm Wrath on targets |
+| Chaotic Stinger | Your summoned bees inflict Poison/Wither on every sting |
+| Parasite | A parasite incubates inside the target; when it bursts, silverfish hatch and nearby insects gang up on it |
+| Web Entangle | Roots the target in cobwebs; the web can be destroyed to free them |
+| Bee Stinger | Fires a swift stinger projectile |
+| Bee Requiem | Three kamikaze bees dive through everything onto the target |
+| Bee Alarm | Stationary turret bees auto-fire at hostiles in range |
+| Spider Nest | Periodically spawns spiders to defend the area; wild spiders nearby join the defense |
+| Summon Frost Spider | A rideable frost spider battle pet |
+| Summon Cockroach Dance Troupe | Maraca-shaking cockroaches grant a rhythm buff aura |
+| Summon Mosquito Swarm | Crimson mosquitoes dive-bomb prey (players first, then hostiles); Blood Symbiosis heals your nearby summons on every hit |
 
-**装备与物品 Items**
+**Items**
 
-- 虫群与我 Swarm Spell Book：虫群派系法术书
-- 虫群·女王蜂皇冠 Queen Bee Crown：攻击使目标心醉魂迷（叠加易伤）
-- 虫群·织网之蛛螯肢 Weaver Spider Chelicerae：虫类生物不再主动攻击你
-- 虫群·蜜蜂化身 Bee Incarnation：召唤物击杀时可能孕育新的召唤物
-- 虫群·群集之杖 / 虫群符文 / 虫群升级法球：施法法杖与升级材料
-- 蜂王浆 / 蛛毒腺 / 虫水晶：虫群法术击杀掉落的合成材料
+- Swarm Spell Book: the Swarm school spell book
+- Queen Bee Crown: your attacks charm the target (stacking vulnerability)
+- Weaver Spider Chelicerae: insect creatures no longer attack you on sight
+- Bee Incarnation: your summons may birth new summons on kill
+- Swarm Staff / Swarm Rune / Swarm Upgrade Orb: casting staff and upgrade materials
+- Royal Jelly / Spider Venom Gland / Insect Crystal: drops from swarm spell kills, used in crafting
 
-## 需求 Requirements
+## Requirements
 
-| 依赖 | 版本 |
+| Dependency | Version |
 |---|---|
 | Minecraft | 1.20.1 |
 | Forge | 47.4.10+ |
 | Iron's Spells 'n Spellbooks | 1.20.1-3.16.3 |
 | GeckoLib | 1.20.1-4.8.4 |
 | Curios | 5.14.1+ |
-| Alex's Mobs（可选 optional） | 1.22.9 |
+| Alex's Mobs (optional) | 1.22.9 |
 
-## 安装 Install
+## Install
 
-1. 安装 Forge 47.4.10+；
-2. 将上方依赖与本模组 jar 一并放入 `mods` 文件夹；
-3. 启动游戏，在法术书中寻找「虫群」派系。
+1. Install Forge 47.4.10+;
+2. Drop the dependencies and this mod's jar into your `mods` folder;
+3. Launch the game and look for the **Swarm** school in your spell book.
 
-## 计划更新 Todo
+## Planned Updates (Todo)
 
-| # | 内容 | 效果 |
-|---|------|------|
-| 1 | 虫群豁免 | 新 effect + 法术，对特定目标释放，无视友军保护可进攻 |
-| 2 | 蜜影迷踪 | 蜜蜂回巢，恢复生命/魔力/饱食度后消失，8~2s 随等级降低   |
-| 3 | 寄生气息 | 蠹虫专属：饥饿、缓慢，可叠加  |
-| 3.5 | 混乱蜂刺 | 中毒/凋零改为可叠加   |
-| 4 | 蜂群呼唤 | 受击概率召蜜蜂回击  |
-| 5 | 女王威严 | 2格内所有自身召唤物获得抗性1、生命恢复1、力量2、速度1、急迫1，伤害提高20% |
+| # | Feature | Effect |
+|---|---|---|
+| 1 | Swarm Exemption* | New effect + spell, cast on a specific target so your insects can attack it, bypassing friendly-fire protection (fixes stalemates vs. enemy summons) |
+| 2 | Honey Courier* | Summons a non-attacking bee that returns to the caster after 8~2s (shorter at higher spell levels), restoring health, mana and some saturation, then vanishes |
+| 3 | Parasitic Breath* | Silverfish-exclusive effect (like Chaotic Stinger): summoned silverfish inflict Hunger and stacking Slowness |
+| 3.5 | Chaotic Stinger tweak | Poison/Wither become stackable |
+| 4 | Swarm Call* | Grants the caster a buff of the same name: a chance to summon bees that strike back at attackers |
+| 5 | Queen's Majesty* | All own summons within 32 blocks gain Resistance I, Regeneration I, Strength II, Speed I, Haste I and deal 20% more damage |
 
+\* Working title, subject to change.
 
-## 许可证 License
+## License
 
-本项目采用 **GNU General Public License v3.0 (GPL-3.0)**。
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0)**.
 
-本许可证要求源自：本模组的代码直接继承并复用了 [Alex's Mobs](https://github.com/AlexModGuy/AlexsMobs)（GPL-3.0-only）的实体类（`EntityCockroach`、`RenderCockroach`），根据 GPL-3.0 的传染性条款，衍生作品必须以 GPL-3.0 发布。
+Reason: this mod's code directly derives from and reuses entity classes from [Alex's Mobs](https://github.com/AlexModGuy/AlexsMobs) (GPL-3.0-only) — `EntityCockroach`/`RenderCockroach`, and since v1.3.0 `EntityCrimsonMosquito`/`RenderCrimsonMosquito`. Under GPL's copyleft terms, derivative works must be released under GPL-3.0.
 
-完整许可证文本见 [LICENSE](./LICENSE) 文件。
+See the [LICENSE](./LICENSE) file for the full license text.
 
-### 依赖许可证
+### Dependency Licenses
 
-| 依赖 | 许可证 |
+| Dependency | License |
 |---|---|
 | Alex's Mobs | GPL-3.0-only |
-| Iron's Spells 'n Spellbooks | All Rights Reserved（允许作为依赖编写 addon） |
+| Iron's Spells 'n Spellbooks | All Rights Reserved (addons allowed as a dependency) |
 | GeckoLib | MIT |
 | Curios | MIT |
