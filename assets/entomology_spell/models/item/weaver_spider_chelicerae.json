@@ -1,6 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "entomology_spell:item/weaver_spider_chelicerae"
-  }
-}
