@@ -63,5 +63,11 @@ public class ClientSetup
             event.registerEntityRenderer(EntityRegistry.SUMMONED_COCKROACH.get(),
                     com.github.alexthe666.alexsmobs.client.render.RenderCockroach::new);
         }
+        // Reuse Alex's Mobs' crimson mosquito renderer (blood belly layer included); skipped without alexsmobs
+        if (EntityRegistry.SUMMONED_MOSQUITO != null)
+        {
+            event.registerEntityRenderer(EntityRegistry.SUMMONED_MOSQUITO.get(),
+                    com.github.alexthe666.alexsmobs.client.render.RenderCrimsonMosquito::new);
+        }
     }
 }
