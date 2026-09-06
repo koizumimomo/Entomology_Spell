@@ -7,9 +7,9 @@ An addon mod for **Iron's Spells 'n Spellbooks** that adds a brand-new **Swarm (
 ## 下载 Download
 
 - 最新版本 Latest: [Releases](../../releases) （v1.2.2）
-- CurseForge: 待添加 TODO
-- Modrinth: 待添加 TODO
-- 其他链接 Other links: 待添加 TODO
+- [CurseForge](https://www.curseforge.com/minecraft/mc-mods/es-entomology-spell)
+- [Modrinth](https://modrinth.com/mod/esentomology_spell)
+- 其他链接 Other links: [Bilibili](https://space.bilibili.com/26216524)
 
 ## 功能一览 Features
 
