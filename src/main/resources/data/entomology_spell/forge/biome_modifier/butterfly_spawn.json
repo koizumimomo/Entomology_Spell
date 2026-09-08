@@ -1,0 +1,12 @@
+{
+  "type": "forge:add_spawns",
+  "biomes": "#entomology_spell:butterfly_spawn_biomes",
+  "spawners": [
+    {
+      "type": "entomology_spell:butterfly",
+      "weight": 15,
+      "minCount": 1,
+      "maxCount": 3
+    }
+  ]
+}
