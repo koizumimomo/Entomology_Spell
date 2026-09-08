@@ -1,0 +1,11 @@
+{
+  "insect_cast": {
+    "sounds": [
+      {
+        "name": "irons_spellbooks:generic/nature_cast",
+        "volume": 1.0,
+        "pitch": 1.1
+      }
+    ]
+  }
+}
