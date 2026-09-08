@@ -2,6 +2,7 @@ package io.entomology.entomology.event;
 
 import io.entomology.entomology.Config;
 import io.entomology.entomology.EntomologyMod;
+import io.entomology.entomology.registries.EffectRegistry;
 import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -41,6 +42,9 @@ public class SummonFriendlyFireHandler
         Entity victimOwner = SummonManager.getOwner(victim);
         if (victimOwner != null && victimOwner == attackerOwner)
         {
+            // 虫群豁免：被标记的友军召唤物可以被己方虫子进攻（内战/切磋用）
+            if (victim.hasEffect(EffectRegistry.SWARM_EXEMPTION.get()))
+                return;
             event.setCanceled(true);
         }
     }

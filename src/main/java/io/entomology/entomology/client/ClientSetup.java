@@ -3,6 +3,9 @@ package io.entomology.entomology.client;
 import io.entomology.entomology.EntomologyMod;
 import io.entomology.entomology.entity.BeeRequiemRenderer;
 import io.entomology.entomology.entity.BeeStingerRenderer;
+import io.entomology.entomology.entity.ButterflyPrincessRenderer;
+import io.entomology.entomology.entity.ButterflyRaidRenderer;
+import io.entomology.entomology.entity.ButterflyRenderer;
 import io.entomology.entomology.entity.SpiderNestRenderer;
 import io.entomology.entomology.entity.WebRootRenderer;
 import io.entomology.entomology.registries.EntityRegistry;
@@ -30,6 +33,10 @@ public class ClientSetup
     public static void onClientSetup(FMLClientSetupEvent event)
     {
         CuriosRendererRegistry.register(ItemRegistry.SWARM_SPELL_BOOK.get(), SpellBookCurioRenderer::new);
+        CuriosRendererRegistry.register(ItemRegistry.BUTTERFLY_WINGS_BLUE.get(),
+                io.entomology.entomology.client.curio.ButterflyWingsCurioRenderer::new);
+        CuriosRendererRegistry.register(ItemRegistry.BUTTERFLY_WINGS_WHITE.get(),
+                io.entomology.entomology.client.curio.ButterflyWingsCurioRenderer::new);
         ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
                 () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, parent) ->
                         new io.entomology.entomology.client.EntomologyConfigScreen(parent)));
@@ -51,6 +58,11 @@ public class ClientSetup
         // Summoned insects reuse the vanilla renderers (and thus vanilla textures)
         event.registerEntityRenderer(EntityRegistry.SUMMONED_BEE.get(),
                 net.minecraft.client.renderer.entity.BeeRenderer::new);
+        // Honey courier + swarm call bees are bee subclasses: vanilla bee renderer
+        event.registerEntityRenderer(EntityRegistry.HONEY_COURIER_BEE.get(),
+                net.minecraft.client.renderer.entity.BeeRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SWARM_CALL_BEE.get(),
+                net.minecraft.client.renderer.entity.BeeRenderer::new);
         event.registerEntityRenderer(EntityRegistry.SUMMONED_SILVERFISH.get(),
                 net.minecraft.client.renderer.entity.SilverfishRenderer::new);
         event.registerEntityRenderer(EntityRegistry.SUMMONED_SPIDER.get(),
@@ -69,5 +81,12 @@ public class ClientSetup
             event.registerEntityRenderer(EntityRegistry.SUMMONED_MOSQUITO.get(),
                     com.github.alexthe666.alexsmobs.client.render.RenderCrimsonMosquito::new);
         }
+        // Butterfly swarm entity (wild mob + Summon Butterfly spell visual)
+        event.registerEntityRenderer(EntityRegistry.BUTTERFLY.get(), ButterflyRenderer::new);
+        // Butterfly raid projectile (particle-only, no visible model)
+        event.registerEntityRenderer(EntityRegistry.BUTTERFLY_RAID.get(), ButterflyRaidRenderer::new);
+        // Butterfly Princess — both variants share the same renderer/model/texture
+        event.registerEntityRenderer(EntityRegistry.SUMMONED_BUTTERFLY_PRINCESS.get(), ButterflyPrincessRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.NPC_BUTTERFLY_PRINCESS.get(), ButterflyPrincessRenderer::new);
     }
 }

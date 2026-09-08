@@ -56,6 +56,9 @@ public class SpiderNestEntity extends LivingEntity implements GeoEntity
     private LivingEntity owner;
     private int ticksAlive = 0;
     private int spellLevel = 1;
+    private float spellPower = 0.0F;
+    /** Recast castData from the spell, so spawned spiders can be registered for auto-dismiss. */
+    private io.redspace.ironsspellbooks.capabilities.magic.SummonedEntitiesCastData castData;
 
     private static final RawAnimation ANIM_IDLE = RawAnimation.begin().thenLoop("animation.spider_nest.idle");
     private final AnimationController<SpiderNestEntity> animController =
@@ -68,12 +71,17 @@ public class SpiderNestEntity extends LivingEntity implements GeoEntity
         this.setNoGravity(true);
     }
 
-    public SpiderNestEntity(Level level, Vec3 position, LivingEntity owner, int spellLevel)
+    public SpiderNestEntity(Level level, Vec3 position, LivingEntity owner, int spellLevel, float spellPower,
+                            io.redspace.ironsspellbooks.capabilities.magic.SummonedEntitiesCastData castData)
     {
         this(EntityRegistry.SPIDER_NEST.get(), level);
         this.moveTo(position.x, position.y, position.z);
         this.owner = owner;
         this.spellLevel = spellLevel;
+        this.spellPower = spellPower;
+        this.castData = castData;
+        // Nest health scales with spell level (+8 each) and spell power (1:1)
+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(10.0D + spellLevel * 8.0D + spellPower);
         this.setHealth(this.getMaxHealth());
     }
 
@@ -106,6 +114,10 @@ public class SpiderNestEntity extends LivingEntity implements GeoEntity
             }
         }
         this.spellLevel = compound.getInt("SpellLevel");
+        this.spellPower = compound.getFloat("SpellPower");
+        // Re-apply the scaled max health (NBT load bypasses the casting constructor)
+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(10.0D + this.spellLevel * 8.0D + this.spellPower);
+        this.setHealth(this.getMaxHealth());
     }
 
     @Override
@@ -117,6 +129,7 @@ public class SpiderNestEntity extends LivingEntity implements GeoEntity
             compound.putUUID("OwnerUUID", this.owner.getUUID());
         }
         compound.putInt("SpellLevel", this.spellLevel);
+        compound.putFloat("SpellPower", this.spellPower);
     }
 
     @Override
@@ -233,7 +246,21 @@ public class SpiderNestEntity extends LivingEntity implements GeoEntity
         );
 
         spider.moveTo(spawnPos);
+        // Spider max health scales with the nest's spell power (+2 per point) and spell level (+4 each)
+        double baseHealth = spider.getAttribute(Attributes.MAX_HEALTH).getBaseValue();
+        spider.getAttribute(Attributes.MAX_HEALTH).setBaseValue(
+                baseHealth + 2.0D * this.spellPower + 4.0D * (this.spellLevel - 1));
+        spider.setHealth(spider.getMaxHealth());
         this.level().addFreshEntity(spider);
+        // Track ownership for recast auto-dismiss
+        if (this.owner != null)
+        {
+            SummonManager.setOwner(spider, this.owner);
+            if (this.castData != null)
+            {
+                this.castData.add(spider);
+            }
+        }
         this.playSound(SoundEvents.SPIDER_AMBIENT, 1.0F, 0.8F);
     }
 

@@ -16,6 +16,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Silverfish;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -67,6 +68,13 @@ public class SummonedSilverfishEntity extends Silverfish implements IMagicSummon
         this.targetSelector.addGoal(4, new GenericHurtByTargetGoal(this, entity -> entity == this.getSummoner()).setAlertOthers());
         this.targetSelector.addGoal(5, new GenericProtectOwnerTargetGoal(this, this::getSummoner));
 
+        // Auto-hunt nearby hostile mobs (like summoned swarm bees do).
+        this.targetSelector.addGoal(6, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false,
+                target -> target != this.getSummoner()
+                        && SummonManager.getOwner(target) != this.getSummoner()
+                        && target instanceof Enemy
+        ));
+
         // No follow-owner goal on purpose: these fish are tied to the parasite
         // host rather than to the caster's side, and their lifetime is capped
         // by SummonManager.setDuration in the parasite effect.
@@ -109,6 +117,19 @@ public class SummonedSilverfishEntity extends Silverfish implements IMagicSummon
 
     @Override
     public boolean canBeLeashed(Player player)
+    {
+        return false;
+    }
+
+    /**
+     * Transient summon: lifespan is governed by SummonManager's expiration
+     * queue (set via setDuration in ParasiteEffect). Returning false prevents
+     * the chunk serializer from writing a stale copy that would be rebuilt as
+     * a NoAI shell on chunk reload (ISS's saveSummonerData saves the entity
+     * explicitly via entity.save(), which is unaffected by this flag).
+     */
+    @Override
+    public boolean shouldBeSaved()
     {
         return false;
     }

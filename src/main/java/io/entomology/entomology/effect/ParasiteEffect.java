@@ -54,6 +54,9 @@ public class ParasiteEffect extends MobEffect
 
         int spellLevel = instance.getAmplifier() + 1;
         int silverfishCount = 3 + spellLevel; // level 1 hatches 4, level 5 hatches 8
+        // Spell power captured at cast time; default matches the spell's base power
+        float spellPower = data.contains(ParasiteSpell.POWER_KEY) ? data.getFloat(ParasiteSpell.POWER_KEY) : 20.0F;
+        data.remove(ParasiteSpell.POWER_KEY);
 
         for (int i = 0; i < silverfishCount; i++)
         {
@@ -68,6 +71,11 @@ public class ParasiteEffect extends MobEffect
                     host.getZ() + Math.sin(angle) * distance,
                     world.random.nextFloat() * 360.0F, 0.0F);
             silverfish.setTarget(host);
+            // Max health scales with spell power (+0.75 per point) and spell level (+3 each)
+            double baseHealth = silverfish.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).getBaseValue();
+            silverfish.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(
+                    baseHealth + spellPower * 0.75D + (spellLevel - 1) * 3.0D);
+            silverfish.setHealth(silverfish.getMaxHealth());
             if (caster != null)
             {
                 SummonManager.setOwner(silverfish, caster);

@@ -17,6 +17,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
@@ -63,6 +64,21 @@ public class SummonedBeeEntity extends Bee implements IMagicSummon
         this.targetSelector.addGoal(1, new SummonedBeeOwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new SummonedBeeOwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(3, new GenericHurtByTargetGoal(this, entity -> entity == this.getSummoner()).setAlertOthers());
+        // Swarm members (Summon Bee Swarm) actively hunt nearby hostile mobs.
+        // Alarm bees / requiem bees override isSwarmMember() to false, so they
+        // keep their owner-reactive behaviour and do not wander off to attack.
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false,
+                target -> target != this.getSummoner()
+                        && SummonManager.getOwner(target) != this.getSummoner()
+                        && (target instanceof Enemy
+                        || target.hasEffect(io.entomology.entomology.registries.EffectRegistry.SWARM_EXEMPTION.get())))
+        {
+            @Override
+            public boolean canUse()
+            {
+                return SummonedBeeEntity.this.isSwarmMember() && super.canUse();
+            }
+        });
 
         this.goalSelector.addGoal(4, new GenericFollowOwnerGoal(this, this::getSummoner, 1.0, 9.0F, 4.0F, true, 20.0F));
         this.goalSelector.addGoal(5, new SummonedBeeDespawnGoal(this));

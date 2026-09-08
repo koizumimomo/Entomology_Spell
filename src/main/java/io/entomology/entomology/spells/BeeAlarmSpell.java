@@ -14,14 +14,21 @@ import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
+import io.redspace.ironsspellbooks.capabilities.magic.PlayerRecasts;
+import io.redspace.ironsspellbooks.capabilities.magic.RecastInstance;
+import io.redspace.ironsspellbooks.capabilities.magic.RecastResult;
 import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
+import io.redspace.ironsspellbooks.capabilities.magic.SummonedEntitiesCastData;
+import io.redspace.ironsspellbooks.api.spells.ICastDataSerializable;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -36,6 +43,7 @@ import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Places alarm bees at fixed posts around the caster. Each bee stays at its
@@ -108,6 +116,28 @@ public class BeeAlarmSpell extends AbstractSpell
     }
 
     @Override
+    public int getRecastCount(int spellLevel, LivingEntity entity)
+    {
+        return 2;
+    }
+
+    @Override
+    public ICastDataSerializable getEmptyCastData()
+    {
+        return new SummonedEntitiesCastData();
+    }
+
+    @Override
+    public void onRecastFinished(ServerPlayer serverPlayer, RecastInstance recastInstance, RecastResult recastResult, ICastDataSerializable castDataSerializable)
+    {
+        if (SummonManager.recastFinishedHelper(serverPlayer, recastInstance, recastResult, castDataSerializable))
+        {
+            serverPlayer.removeEffect(EffectRegistry.SUMMONED_ALARM_BEE.get());
+            super.onRecastFinished(serverPlayer, recastInstance, recastResult, castDataSerializable);
+        }
+    }
+
+    @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData)
     {
         if (world.isClientSide)
@@ -126,35 +156,44 @@ public class BeeAlarmSpell extends AbstractSpell
         int duration = this.getDuration(spellLevel, entity);
         double baseDamage = BEE_STING_DAMAGE + (spellLevel * 0.5);
 
-        // Place bees at fixed posts around the caster (like Cursed Minefield places mines)
-        for (int i = 0; i < beeCount; i++)
+        if (world instanceof ServerLevel serverLevel)
         {
-            double angle = (Math.PI * 2 / beeCount) * i + world.random.nextDouble() * 0.5;
-            double radius = PLACEMENT_RADIUS * (0.6 + world.random.nextDouble() * 0.6);
-            double x = entity.getX() + Math.cos(angle) * radius;
-            double z = entity.getZ() + Math.sin(angle) * radius;
-            double y = entity.getY() + 0.5 + world.random.nextDouble() * 1.0;
+            PlayerRecasts recasts = playerMagicData.getPlayerRecasts();
 
-            AlarmBee alarmBee = new AlarmBee(EntityRegistry.SUMMONED_BEE.get(), world, entity, duration, baseDamage, new Vec3(x, y, z));
-            alarmBee.moveTo(x, y, z);
-            alarmBee.setNoAi(true);      // no vanilla bee AI; custom alarm behavior in tick()
-            alarmBee.setNoGravity(true); // hover at the fixed post
-            alarmBee.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.0D);
-            alarmBee.setPersistenceRequired();
+            if (!recasts.hasRecastForSpell(this))
+            {
+                SummonedEntitiesCastData castData = new SummonedEntitiesCastData();
 
-            world.addFreshEntity(alarmBee);
+                for (int i = 0; i < beeCount; i++)
+                {
+                    double angle = (Math.PI * 2 / beeCount) * i + world.random.nextDouble() * 0.5;
+                    double radius = PLACEMENT_RADIUS * (0.6 + world.random.nextDouble() * 0.6);
+                    double x = entity.getX() + Math.cos(angle) * radius;
+                    double z = entity.getZ() + Math.sin(angle) * radius;
+                    double y = entity.getY() + 0.5 + world.random.nextDouble() * 1.0;
 
-            // Set ownership for Chaotic Stinger effect
-            SummonManager.setOwner(alarmBee, entity);
+                    AlarmBee alarmBee = new AlarmBee(EntityRegistry.SUMMONED_BEE.get(), world, entity, duration, baseDamage, new Vec3(x, y, z));
+                    alarmBee.moveTo(x, y, z);
+                    alarmBee.setNoAi(true);
+                    alarmBee.setNoGravity(true);
+                    alarmBee.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.0D);
+                    alarmBee.setPersistenceRequired();
 
-            // Spawn particles at the fixed post
-            MagicManager.spawnParticles(world, ParticleTypes.FALLING_HONEY, x, y + 0.5, z, 6, 0.15, 0.15, 0.15, 0.1, false);
+                    world.addFreshEntity(alarmBee);
+                    SummonManager.setOwner(alarmBee, entity);
+                    castData.add(alarmBee);
+
+                    MagicManager.spawnParticles(world, ParticleTypes.FALLING_HONEY, x, y + 0.5, z, 6, 0.15, 0.15, 0.15, 0.1, false);
+                }
+
+                entity.addEffect(new MobEffectInstance(EffectRegistry.SUMMONED_ALARM_BEE.get(), duration, 0, false, false, true));
+
+                RecastInstance recastInstance = new RecastInstance(
+                        this.getSpellId(), spellLevel, this.getRecastCount(spellLevel, entity),
+                        duration, castSource, castData);
+                recasts.addRecast(recastInstance, playerMagicData);
+            }
         }
-
-        // HUD status indicator: own effect (not Summoned Bee Swarm) so the alarm
-        // posts and the bee swarm spell stay fully independent; the countdown
-        // mirrors the alarm bees' lifetime.
-        entity.addEffect(new MobEffectInstance(EffectRegistry.SUMMONED_ALARM_BEE.get(), duration, 0, false, false, true));
 
         super.onCast(world, spellLevel, entity, castSource, playerMagicData);
     }

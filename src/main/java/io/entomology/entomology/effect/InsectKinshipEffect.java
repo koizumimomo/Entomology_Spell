@@ -28,6 +28,10 @@ public class InsectKinshipEffect extends MobEffect
         LivingEntity target = event.getNewTarget();
         if (target == null)
             return;
+        // Swarm Exemption marks the target as fair game: insects may attack it
+        // despite kinship (the swarm exemption spell's answer to kinship standoffs)
+        if (target.hasEffect(EffectRegistry.SWARM_EXEMPTION.get()))
+            return;
         if (!target.hasEffect(EffectRegistry.INSECT_KINSHIP.get()))
             return;
         if (SwarmCreatures.isSwarmCreature(event.getEntity()))

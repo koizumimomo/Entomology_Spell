@@ -78,7 +78,8 @@ public class SummonedMosquitoEntity extends EntityCrimsonMosquito implements IMa
         // Priority 1: enemy players (PvP). Priority 2: hostile mobs (PvE default).
         this.targetSelector.addGoal(1, new EntityAINearestTarget3D<>(this, Player.class, 20, true, false, this::isEnemyOfOwner));
         this.targetSelector.addGoal(2, new EntityAINearestTarget3D<>(this, Mob.class, 50, false, false,
-                target -> target instanceof Enemy && this.isEnemyOfOwner(target)));
+                target -> (target instanceof Enemy || target.hasEffect(EffectRegistry.SWARM_EXEMPTION.get()))
+                        && this.isEnemyOfOwner(target)));
     }
 
     /**
@@ -112,15 +113,17 @@ public class SummonedMosquitoEntity extends EntityCrimsonMosquito implements IMa
         return !owner.isAlliedTo(target) && !target.isAlliedTo(owner);
     }
 
-    /** Players carrying insect pheromone count as allies of the swarm. */
+    /** Players carrying insect pheromone count as allies of the swarm — unless swarm exemption marks them as fair game. */
     private static boolean isFriendlyPheromonePlayer(LivingEntity target)
     {
-        return target instanceof Player && target.hasEffect(EffectRegistry.INSECT_PHEROMONE.get());
+        return target instanceof Player && target.hasEffect(EffectRegistry.INSECT_PHEROMONE.get())
+                && !target.hasEffect(EffectRegistry.SWARM_EXEMPTION.get());
     }
 
     /**
      * Choke point for every AI path that can pick a target (targeting goals,
-     * hurt retaliation, swarm alert): a pheromone player is never accepted.
+     * hurt retaliation, swarm alert): a pheromone player is never accepted
+     * (except when marked with swarm exemption).
      */
     @Override
     public void setTarget(@Nullable LivingEntity target)

@@ -28,6 +28,7 @@ public class ChaoticStingerEffect extends MobEffect
     private static final int WITHER_DURATION = 80; // 4 seconds
     private static final int PARALYZE_DURATION = 60; // 3 seconds
     private static final float PARALYZE_CHANCE = 0.25F;
+    private static final int MAX_STACKS = 4; // poison/wither stack up to amplifier 4 (level V)
 
     public ChaoticStingerEffect()
     {
@@ -69,12 +70,12 @@ public class ChaoticStingerEffect extends MobEffect
         LivingEntity victim = event.getEntity();
         int amplifier = stingerEffect.getAmplifier();
 
-        // Random debuff: poison or wither
+        // Random debuff: poison or wither — both stack up on repeated stings
         boolean poison = victim.level().getRandom().nextBoolean();
-        MobEffectInstance debuff = poison
-                ? new MobEffectInstance(MobEffects.POISON, POISON_DURATION, amplifier, false, true, true)
-                : new MobEffectInstance(MobEffects.WITHER, WITHER_DURATION, amplifier, false, true, true);
-        victim.addEffect(debuff);
+        MobEffect poisonOrWither = poison ? MobEffects.POISON : MobEffects.WITHER;
+        int duration = poison ? POISON_DURATION : WITHER_DURATION;
+        int stackAmplifier = StackingEffects.nextAmplifier(victim, poisonOrWither, amplifier, MAX_STACKS);
+        StackingEffects.applyForced(victim, poisonOrWither, duration, stackAmplifier);
 
         // The Bumblezone integration: a chance to also paralyze the victim
         if (victim.level().getRandom().nextFloat() < PARALYZE_CHANCE)

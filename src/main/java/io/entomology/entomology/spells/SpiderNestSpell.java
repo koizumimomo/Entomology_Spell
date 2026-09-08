@@ -12,20 +12,32 @@ import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
 import io.redspace.ironsspellbooks.api.util.Utils;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
+import io.redspace.ironsspellbooks.capabilities.magic.PlayerRecasts;
+import io.redspace.ironsspellbooks.capabilities.magic.RecastInstance;
+import io.redspace.ironsspellbooks.capabilities.magic.RecastResult;
+import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
+import io.redspace.ironsspellbooks.capabilities.magic.SummonedEntitiesCastData;
+import io.redspace.ironsspellbooks.api.spells.ICastDataSerializable;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Summons a spider nest entity that periodically spawns spiders to defend the area.
@@ -90,7 +102,37 @@ public class SpiderNestSpell extends AbstractSpell
 
     public float getNestHealth(int spellLevel, LivingEntity caster)
     {
-        return 10.0F; // 5 hearts
+        // Must match SpiderNestEntity's scaling: 10 base + 8 per level + spell power
+        return 10.0F + spellLevel * 8.0F + this.getSpellPower(spellLevel, caster);
+    }
+
+    @Override
+    public int getRecastCount(int spellLevel, LivingEntity entity)
+    {
+        return 2;
+    }
+
+    @Override
+    public ICastDataSerializable getEmptyCastData()
+    {
+        return new SummonedEntitiesCastData();
+    }
+
+    @Override
+    public void onRecastFinished(ServerPlayer serverPlayer, RecastInstance recastInstance, RecastResult recastResult, ICastDataSerializable castDataSerializable)
+    {
+        if (SummonManager.recastFinishedHelper(serverPlayer, recastInstance, recastResult, castDataSerializable))
+        {
+            // Also dismiss the nest entity itself (not tracked by SummonManager)
+            ServerLevel serverLevel = serverPlayer.serverLevel();
+            AABB scanArea = serverPlayer.getBoundingBox().inflate(32.0);
+            for (SpiderNestEntity nest : serverLevel.getEntitiesOfClass(SpiderNestEntity.class, scanArea))
+            {
+                nest.discard();
+            }
+            serverPlayer.removeEffect(EffectRegistry.NEST_DURATION.get());
+            super.onRecastFinished(serverPlayer, recastInstance, recastResult, castDataSerializable);
+        }
     }
 
     @Override
@@ -108,31 +150,40 @@ public class SpiderNestSpell extends AbstractSpell
             return;
         }
 
-        // Nest is placed in place at the caster's feet; the model is offset
-        // downwards, so anchor above the ground to keep it out of the dirt
-        Vec3 nestPos = new Vec3(entity.position().x, entity.position().y + 0.3, entity.position().z);
-
-        // Spawn spider nest
-        SpiderNestEntity nest = new SpiderNestEntity(world, nestPos, entity, spellLevel);
-        world.addFreshEntity(nest);
-
-        // Duration buff: shows remaining time on the nest; it collapses when it runs out
-        nest.addEffect(new MobEffectInstance(EffectRegistry.NEST_DURATION.get(),
-                this.getDuration(spellLevel, entity), 0, false, false, true));
-
-        // First wave immediately
-        nest.summonSpiders();
-
-        // Visual effect - web particles
-        for (int i = 0; i < 16; i++)
+        if (world instanceof ServerLevel serverLevel)
         {
-            double theta = Math.toRadians(360.0 / 16) * i;
-            double x = Math.cos(theta) * 1.5;
-            double z = Math.sin(theta) * 1.5;
-            
-            MagicManager.spawnParticles(world, ParticleTypes.SQUID_INK,
-                    nestPos.x + x, nestPos.y + 1.0, nestPos.z + z,
-                    1, 0.0, 0.1, 0.0, 0.05, false);
+            PlayerRecasts recasts = playerMagicData.getPlayerRecasts();
+
+            if (!recasts.hasRecastForSpell(this))
+            {
+                int duration = this.getDuration(spellLevel, entity);
+                SummonedEntitiesCastData castData = new SummonedEntitiesCastData();
+
+                Vec3 nestPos = new Vec3(entity.position().x, entity.position().y + 0.3, entity.position().z);
+                SpiderNestEntity nest = new SpiderNestEntity(world, nestPos, entity, spellLevel,
+                        this.getSpellPower(spellLevel, entity), castData);
+                world.addFreshEntity(nest);
+
+                nest.addEffect(new MobEffectInstance(EffectRegistry.NEST_DURATION.get(),
+                        duration, 0, false, false, true));
+
+                nest.summonSpiders();
+
+                for (int i = 0; i < 16; i++)
+                {
+                    double theta = Math.toRadians(360.0 / 16) * i;
+                    double x = Math.cos(theta) * 1.5;
+                    double z = Math.sin(theta) * 1.5;
+                    MagicManager.spawnParticles(world, ParticleTypes.SQUID_INK,
+                            nestPos.x + x, nestPos.y + 1.0, nestPos.z + z,
+                            1, 0.0, 0.1, 0.0, 0.05, false);
+                }
+
+                RecastInstance recastInstance = new RecastInstance(
+                        this.getSpellId(), spellLevel, this.getRecastCount(spellLevel, entity),
+                        duration, castSource, castData);
+                recasts.addRecast(recastInstance, playerMagicData);
+            }
         }
 
         super.onCast(world, spellLevel, entity, castSource, playerMagicData);

@@ -35,6 +35,7 @@ public class ArmorEffectHandler
             return;
 
         refresh(player, EquipmentSlot.HEAD, ItemRegistry.QUEEN_BEE_CROWN.get(), EffectRegistry.SWEETHEART.get());
+        refresh(player, EquipmentSlot.HEAD, ItemRegistry.TRUE_QUEEN_CROWN.get(), EffectRegistry.QUEENS_MAJESTY.get());
         refresh(player, EquipmentSlot.CHEST, ItemRegistry.WEAVER_SPIDER_CHELICERAE.get(), EffectRegistry.INSECT_KINSHIP.get());
         refresh(player, EquipmentSlot.LEGS, ItemRegistry.BEE_INCARNATION.get(), EffectRegistry.REPRODUCTIVE_DESIRE.get());
     }
@@ -48,6 +49,7 @@ public class ArmorEffectHandler
         if (event.getSlot() == EquipmentSlot.HEAD)
         {
             apply(player, event.getTo().is(ItemRegistry.QUEEN_BEE_CROWN.get()), EffectRegistry.SWEETHEART.get());
+            apply(player, event.getTo().is(ItemRegistry.TRUE_QUEEN_CROWN.get()), EffectRegistry.QUEENS_MAJESTY.get());
         }
         else if (event.getSlot() == EquipmentSlot.CHEST)
         {

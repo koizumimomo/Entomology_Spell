@@ -20,12 +20,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Infects the targeted entity with a Parasite. The higher the spell level, the
@@ -36,6 +38,7 @@ import java.util.Optional;
 public class ParasiteSpell extends AbstractSpell
 {
     public static final String CASTER_UUID_KEY = "entomologyParasiteCaster";
+    public static final String POWER_KEY = "entomologyParasitePower";
 
     private final ResourceLocation spellId = ResourceLocation.fromNamespaceAndPath(EntomologyMod.MODID, "parasite");
     private final DefaultConfig defaultConfig = new DefaultConfig()
@@ -99,8 +102,8 @@ public class ParasiteSpell extends AbstractSpell
 
         int duration = this.getDuration(spellLevel);
         target.addEffect(new MobEffectInstance(EffectRegistry.PARASITE.get(), duration, spellLevel - 1, false, false, true));
-        // Remember the caster so hatched silverfish can be bound to them as summons
         target.getPersistentData().putUUID(CASTER_UUID_KEY, entity.getUUID());
+        target.getPersistentData().putFloat(POWER_KEY, this.getSpellPower(spellLevel, entity));
 
         MagicManager.spawnParticles(world, ParticleTypes.SNEEZE, target.getX(), target.getY() + 1.0, target.getZ(), 16, 0.3, 0.5, 0.3, 0.1, false);
 

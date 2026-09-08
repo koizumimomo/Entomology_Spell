@@ -3,7 +3,10 @@ package io.entomology.entomology.event;
 import io.entomology.entomology.EntomologyMod;
 import io.entomology.entomology.entity.SummonedMosquitoEntity;
 import io.entomology.entomology.registries.SpellRegistry;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -28,6 +31,12 @@ public class MosquitoLifestealHandler
         if (attacker instanceof SummonedMosquitoEntity mosquito)
         {
             mosquito.onDealtDamage(event.getAmount());
+            // Inflict Weakness I (5s) on the target hit by the mosquito
+            LivingEntity target = event.getEntity();
+            if (target != null && target.isAlive())
+            {
+                target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0, false, false, true));
+            }
         }
     }
 }
