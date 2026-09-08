@@ -30,15 +30,26 @@ An addon mod for **Iron's Spells 'n Spellbooks** that adds a brand-new **Swarm (
 | Summon Frost Spider | A rideable frost spider battle pet |
 | Summon Cockroach Dance Troupe | Maraca-shaking cockroaches grant a rhythm buff aura |
 | Summon Mosquito Swarm | Crimson mosquitoes dive-bomb prey (players first, then hostiles); Blood Symbiosis heals your nearby summons on every hit |
+| Swarm Exemption (Attack Order) | Marks a target with Swarm: Attack — all your summons (bees, butterflies, mosquitoes, etc.) will attack it, bypassing insect kinship and friendly-fire protection |
+| Honey Courier | Summons a non-attacking bee that returns after a few seconds, restoring health, mana and saturation, then vanishes |
+| Parasitic Breath | Summoned silverfish inflict Hunger and stacking Slowness on every bite |
+| Swarm Call | Grants a buff: when hit, a chance to summon counterattack bees that strike the attacker |
+| Butterfly Lovers (化茧成蝶) | Transforms vanilla spiders (incl. cave spiders) into friendly Ice Spiders; with Alex's Mobs: Fly → Crimson Mosquito → Warped Mosco (one step per cast) |
+| Summon Butterfly | Summons butterflies that lift enemies into the air |
+| Summon Butterfly Princess | Summons a butterfly princess who casts swarm spells (Summon Swarm, Confusion Sting, Small Bee Sting, etc.) |
 
 **Items**
 
 - Swarm Spell Book: the Swarm school spell book
 - Queen Bee Crown: your attacks charm the target (stacking vulnerability)
+- True Queen Crown: upgraded crown (Queen Bee Crown + Butterfly Spirit); summons butterflies, grants Queen's Majesty buff to wearer and buffs all summons
+- Butterfly Spirit: obtained from butterfly princess trades; crafting ingredient for True Queen Crown
+- Butterfly Wings (Blue / White): Curios back-slot accessory; grants creative flight; obtained from butterfly princess trades (4 insect crystals + 2 butterfly spirits)
 - Weaver Spider Chelicerae: insect creatures no longer attack you on sight
 - Bee Incarnation: your summons may birth new summons on kill
 - Swarm Staff / Swarm Rune / Swarm Upgrade Orb: casting staff and upgrade materials
-- Royal Jelly / Spider Venom Gland / Insect Crystal: drops from swarm spell kills, used in crafting
+- Royal Jelly / Spider Venom Gland / Insect Crystal: drops from swarm Spell kills, used in crafting
+- Butterfly Spawn Egg / Butterfly Princess Spawn Egg: creative spawn eggs
 
 ## Requirements
 
@@ -59,16 +70,45 @@ An addon mod for **Iron's Spells 'n Spellbooks** that adds a brand-new **Swarm (
 
 ## Planned Updates (Todo)
 
-| # | Feature | Effect |
-|---|---|---|
-| 1 | Swarm Exemption* | New effect + spell, cast on a specific target so your insects can attack it, bypassing friendly-fire protection (fixes stalemates vs. enemy summons) |
-| 2 | Honey Courier* | Summons a non-attacking bee that returns to the caster after 8~2s (shorter at higher spell levels), restoring health, mana and some saturation, then vanishes |
-| 3 | Parasitic Breath* | Silverfish-exclusive effect (like Chaotic Stinger): summoned silverfish inflict Hunger and stacking Slowness |
-| 3.5 | Chaotic Stinger tweak | Poison/Wither become stackable |
-| 4 | Swarm Call* | Grants the caster a buff of the same name: a chance to summon bees that strike back at attackers |
-| 5 | Queen's Majesty* | All own summons within 32 blocks gain Resistance I, Regeneration I, Strength II, Speed I, Haste I and deal 20% more damage |
+All currently planned features have been implemented. No new goals at this time.
 
-\* Working title, subject to change.
+## Changelog (v1.4.x)
+
+### New Spells
+
+- **Attack Order** (swarm_exemption): Marks the target with Swarm: Attack — all your summons (bees, butterflies, mosquitoes, etc.) will attack it, bypassing insect kinship and friendly-fire protection
+- **Honey Courier** (honey_courier): Summons a peaceful bee that returns after a few seconds, restoring health, mana and saturation, then vanishes
+- **Parasitic Breath** (parasitic_breath): Your summoned silverfish inflict stackable Hunger and Slowness on every bite
+- **Swarm Call** (swarm_call): Grants you the Swarm Call state — when hit, a chance to summon bees that strike back at the attacker
+- **Summon Butterfly** (summon_butterfly): Summons a swarm of butterflies that lift the target into the air and drop them for fall damage. If a butterfly dies, there is a chance to spawn a new one
+- **Butterfly Lovers** (butterfly_lovers): Transforms certain insects into stronger forms (Spider/Cave Spider → Frost Spider; with Alex's Mobs: Fly → Crimson Mosquito → Warped Mosco)
+- **Summon Butterfly Princess** (summon_butterfly_princess): Summons a Butterfly Princess who fights for you for 5 minutes, casting insect spells at your enemies
+
+### Tweaks
+
+- Summon Cockroach Dance Troupe (summon_cockroach_dance) now has a chance to summon a Rainbow Cockroach
+- Summoned Crimson Mosquitoes (summon_mosquito_swarm) now inflict Weakness I on their targets
+- Poison and Wither dealt by bees under the Chaotic Stinger (chaotic_stinger) effect are now stackable
+- Summons from Summon Bee Swarm (summon_bee_swarm), Spider Nest (spider_nest) and Summon Mosquito Swarm (summon_mosquito_swarm) now gain bonus health scaling with spell level and spell power — no longer fragile
+- Added two-cast (recast) support to Summon Bee Swarm (summon_bee_swarm), Spider Nest (spider_nest), Summon Mosquito Swarm (summon_mosquito_swarm), Bee Alarm (bee_alarm), Summon Frost Spider (summon_ice_spider), Summon Cockroach Dance Troupe (summon_cockroach_dance) and Summon Butterfly Princess (summon_butterfly_princess) — second cast dismisses the summons
+- Silverfish now automatically seek and attack nearby hostile mobs
+
+### New Features
+
+- Butterflies now spawn naturally around flowers in the world. Right-click a butterfly with Royal Jelly (royal_jelly) to obtain a Summon Butterfly (summon_butterfly) scroll. Right-click with an Insect Crystal (insect_crystal) to turn it into a Butterfly Princess (NPC)
+- **NPC Butterfly Princess**: Can trade. Use 6 Insect Crystals (insect_crystal) + 4 Royal Jelly (royal_jelly) to trade for a Summon Butterfly Princess (summon_butterfly_princess) scroll, plus the crown upgrade material — Butterfly Spirit (butterfly_spirit). If attacked, she will fight back with swarm spells just like a summoned one. (Drops: ink sacs, swarm spell materials, random flowers)
+- **Swarm: True Queen Crown** (true_queen_crown): Crafted from Swarm: Queen Bee Crown (queen_bee_crown) + Butterfly Spirit (butterfly_spirit). Permanently grants the Queen Bee (queen_bee) effect — summons within 32 blocks gain Resistance I, Regeneration I, Strength II, Speed I, Haste I and deal 20% more damage
+
+## Implemented Features
+
+| Feature | Effect |
+|---|---|
+| Swarm Exemption (进攻指令) | Cast on a target to mark it with Swarm: Attack — all your summons (bees, butterflies, mosquitoes, etc.) will attack it, bypassing insect kinship and friendly-fire protection |
+| Honey Courier (蜜影迷踪) | Summons a non-attacking bee that returns after a few seconds, restoring health, mana and saturation, then vanishes |
+| Parasitic Breath (寄生气息) | Summoned silverfish inflict Hunger and stacking Slowness on every bite |
+| Swarm Call (蜂群呼唤) | Grants a buff: when hit, a chance to summon counterattack bees that strike the attacker |
+| Queen's Majesty (女皇威严) | Transferred to True Queen Crown: wearer gains the buff, all summons within 32 blocks gain Resistance I, Regeneration I, Strength II, Speed I, Haste I and deal 20% more damage |
+| Butterfly Wings (蝴蝶翅膀) | Curios back-slot accessory (blue/white) that grants creative flight; obtainable from butterfly princess trades |
 
 ## License
 
@@ -86,3 +126,12 @@ See the [LICENSE](./LICENSE) file for the full license text.
 | Iron's Spells 'n Spellbooks | All Rights Reserved (addons allowed as a dependency) |
 | GeckoLib | MIT |
 | Curios | MIT |
+
+## Credits
+
+The butterfly entity models, butterfly princess models, and butterfly-related spell concepts in this mod were inspired by and adapted from designs originally created by:
+
+- **alphagrievous** — butterfly & butterfly princess model concepts
+- **Sleepy reii reii** — butterfly & butterfly princess model concepts
+
+We are grateful for their creative work and inspiration.
