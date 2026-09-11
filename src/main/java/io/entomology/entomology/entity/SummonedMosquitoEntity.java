@@ -93,6 +93,10 @@ public class SummonedMosquitoEntity extends EntityCrimsonMosquito implements IMa
         {
             return false;
         }
+        if (io.entomology.entomology.util.SwarmCreatures.isShiraoriAttendant(target))
+        {
+            return false;
+        }
         Entity owner = this.getSummoner();
         if (owner == null || target == owner)
         {

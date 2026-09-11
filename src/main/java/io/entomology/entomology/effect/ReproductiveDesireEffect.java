@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 public class ReproductiveDesireEffect extends MobEffect
 {
     public static final float SPAWN_CHANCE = 0.25F;
-    public static final int SPAWN_LIFETIME_TICKS = 12000; // 10 minutes
+    public static final int SPAWN_LIFETIME_TICKS = 600; // 30 seconds
 
     public ReproductiveDesireEffect()
     {

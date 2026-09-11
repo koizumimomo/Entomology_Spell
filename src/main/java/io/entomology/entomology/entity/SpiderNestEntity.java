@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -40,9 +41,14 @@ import java.util.List;
 
 /**
  * A spider nest entity that periodically summons spiders to defend its area.
- * Has 10 health (5 hearts) and can be destroyed. Its lifetime is driven by the
- * "Nest Duration" effect applied on cast - when it expires, the nest collapses.
- * Spiders protect the caster and prioritize enemies that attack the nest.
+ * Has 10 health (5 hearts) and can be destroyed. After the removal of the
+ * standalone Summon Spider Nest spell, nests are spawned exclusively by
+ * Shiraori when she is summoned (two at once, see
+ * {@link io.entomology.entomology.entity.goal.ShiraoriBroodGoal}); their
+ * owner is Shiraori herself, so they also protect her: spiders are alerted
+ * when she is hurt ({@link #defendAgainst(LivingEntity)}) and periodically
+ * redirected at her current combat target. The nest collapses when its owner
+ * dies or despawns, or once the "Nest Duration" effect expires.
  * Wild spider-like mobs near the nest also join the defense.
  */
 public class SpiderNestEntity extends LivingEntity implements GeoEntity
@@ -83,6 +89,19 @@ public class SpiderNestEntity extends LivingEntity implements GeoEntity
         // Nest health scales with spell level (+8 each) and spell power (1:1)
         this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(10.0D + spellLevel * 8.0D + spellPower);
         this.setHealth(this.getMaxHealth());
+    }
+
+    /**
+     * Constructor used when Shiraori spawns her two startup guard nests.
+     * Defaults to level 1 with no recast castData (the nest collapses
+     * automatically when Shiraori dies/despawns via the owner check in tick)
+     * and grants itself the full 5-minute Nest Duration timer.
+     */
+    public SpiderNestEntity(Level level, Vec3 position, LivingEntity owner)
+    {
+        this(level, position, owner, 1, 0.0F, null);
+        this.addEffect(new MobEffectInstance(EffectRegistry.NEST_DURATION.get(),
+                io.entomology.entomology.spells.SummonShiraoriSpell.SUMMON_TIME, 0, false, false));
     }
 
     public static AttributeSupplier.Builder createLivingAttributes()
@@ -179,12 +198,13 @@ public class SpiderNestEntity extends LivingEntity implements GeoEntity
         if (ticksAlive % 40 == 0)
         {
             redirectSpiderTargets();
+            defendOwner();
         }
     }
 
     /**
-     * Summons 1-2 spiders of a random type. Public so the spell can call it
-     * immediately on cast for the first wave.
+     * Summons 1-2 spiders of a random type. Public so Shiraori's brood goal
+     * can call it immediately after the nest spawns for the first wave.
      */
     public void summonSpiders()
     {
@@ -286,6 +306,34 @@ public class SpiderNestEntity extends LivingEntity implements GeoEntity
     public void knockback(double strength, double x, double z)
     {
         // The nest stays where it was placed
+    }
+
+    /**
+     * Public entry point used when the nest's owner (Shiraori) is hurt:
+     * drafts every nearby owned / wild ally spider into attacking the source
+     * of the damage. See GuardianSpiderBerserkHandler.
+     */
+    public void defendAgainst(@Nullable LivingEntity attacker)
+    {
+        alertSpiders(attacker);
+    }
+
+    /**
+     * Keeps the nest's spiders on the same target as its owner (Shiraori):
+     * whatever hostile mob she is currently fighting becomes their target too.
+     */
+    private void defendOwner()
+    {
+        if (this.owner == null || !this.owner.isAlive())
+            return;
+        if (this.owner instanceof Mob ownerMob)
+        {
+            LivingEntity ownerTarget = ownerMob.getTarget();
+            if (ownerTarget != null && ownerTarget.isAlive())
+            {
+                alertSpiders(ownerTarget);
+            }
+        }
     }
 
     private void alertSpiders(@Nullable LivingEntity attacker)

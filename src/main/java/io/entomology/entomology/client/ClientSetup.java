@@ -32,6 +32,13 @@ public class ClientSetup
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event)
     {
+        // The insect egg textures (32x32) have transparent pixels; without the
+        // cutout render layer the placed block renders those pixels as black in
+        // the world even though the item icon (always cutout in GUIs) looks fine.
+        event.enqueueWork(() -> net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(
+                io.entomology.entomology.registries.BlockRegistry.INSECT_EGG.get(),
+                net.minecraft.client.renderer.RenderType.cutout()));
+
         CuriosRendererRegistry.register(ItemRegistry.SWARM_SPELL_BOOK.get(), SpellBookCurioRenderer::new);
         CuriosRendererRegistry.register(ItemRegistry.BUTTERFLY_WINGS_BLUE.get(),
                 io.entomology.entomology.client.curio.ButterflyWingsCurioRenderer::new);
@@ -46,6 +53,9 @@ public class ClientSetup
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
         event.registerEntityRenderer(EntityRegistry.WEB_ROOT.get(), WebRootRenderer::new);
+        // Ground ritual circle under the Shiraori Attendant spider
+        event.registerEntityRenderer(EntityRegistry.LEY_LINE_AREA.get(),
+                io.entomology.entomology.entity.LeyLineAreaRenderer::new);
         event.registerEntityRenderer(EntityRegistry.BEE_STINGER.get(), BeeStingerRenderer::new);
         event.registerEntityRenderer(EntityRegistry.BEE_REQUIEM.get(), BeeRequiemRenderer::new);
         event.registerEntityRenderer(EntityRegistry.SPIDER_NEST.get(), SpiderNestRenderer::new);
@@ -81,6 +91,19 @@ public class ClientSetup
             event.registerEntityRenderer(EntityRegistry.SUMMONED_MOSQUITO.get(),
                     com.github.alexthe666.alexsmobs.client.render.RenderCrimsonMosquito::new);
         }
+        // Summoned centipede (head only — Alex's head tick auto-spawns the body
+        // and tail parts, which keep using Alex's own body/tail renderers).
+        if (EntityRegistry.SUMMONED_CENTIPEDE != null)
+        {
+            event.registerEntityRenderer(EntityRegistry.SUMMONED_CENTIPEDE.get(),
+                    com.github.alexthe666.alexsmobs.client.render.RenderCentipedeHead::new);
+        }
+        // Summoned Warped Mosco reuses Alex's warped mosco renderer (glow layer included).
+        if (EntityRegistry.SUMMONED_WARPED_MOSCO != null)
+        {
+            event.registerEntityRenderer(EntityRegistry.SUMMONED_WARPED_MOSCO.get(),
+                    com.github.alexthe666.alexsmobs.client.render.RenderWarpedMosco::new);
+        }
         // Butterfly swarm entity (wild mob + Summon Butterfly spell visual)
         event.registerEntityRenderer(EntityRegistry.BUTTERFLY.get(), ButterflyRenderer::new);
         // Butterfly raid projectile (particle-only, no visible model)
@@ -88,5 +111,22 @@ public class ClientSetup
         // Butterfly Princess — both variants share the same renderer/model/texture
         event.registerEntityRenderer(EntityRegistry.SUMMONED_BUTTERFLY_PRINCESS.get(), ButterflyPrincessRenderer::new);
         event.registerEntityRenderer(EntityRegistry.NPC_BUTTERFLY_PRINCESS.get(), ButterflyPrincessRenderer::new);
+        // Shiraori (Spider Mother) — GeckoLib-rendered wizard
+        event.registerEntityRenderer(EntityRegistry.SHIRAORI.get(),
+                io.entomology.entomology.entity.ShiraoriRenderer::new);
+        // Guardian Spider — GeckoLib-rendered large spider
+        event.registerEntityRenderer(EntityRegistry.GUARDIAN_SPIDER.get(),
+                io.entomology.entomology.entity.GuardianSpiderRenderer::new);
+        // Bug Beetle — GeckoLib-rendered neutral beetle
+        event.registerEntityRenderer(EntityRegistry.BUG_BEETLE.get(),
+                io.entomology.entomology.entity.BugBeetleRenderer::new);
+        // Cicada — GeckoLib-rendered flying cicada
+        event.registerEntityRenderer(EntityRegistry.CICADA.get(),
+                io.entomology.entomology.entity.CicadaRenderer::new);
+        // Summoned variants hatched from Shiraori's insect eggs reuse the wild renderers/models
+        event.registerEntityRenderer(EntityRegistry.SUMMONED_CICADA.get(),
+                io.entomology.entomology.entity.CicadaRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.SUMMONED_BUG_BEETLE.get(),
+                io.entomology.entomology.entity.BugBeetleRenderer::new);
     }
 }

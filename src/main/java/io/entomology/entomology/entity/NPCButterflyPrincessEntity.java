@@ -113,6 +113,7 @@ public class NPCButterflyPrincessEntity extends NeutralWizard implements IMercha
 
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.butterfly_princess.idle");
     private static final RawAnimation WALK = RawAnimation.begin().thenLoop("animation.butterfly_princess.walk");
+    private static final RawAnimation FLYING = RawAnimation.begin().thenLoop("animation.butterfly_princess.flying");
     private static final RawAnimation CAST = RawAnimation.begin().thenPlay("animation.butterfly_princess.attack1");
 
     @Override
@@ -130,7 +131,7 @@ public class NPCButterflyPrincessEntity extends NeutralWizard implements IMercha
             }
             else
             {
-                state.setAnimation(IDLE);
+                state.setAnimation(FLYING);
             }
             return PlayState.CONTINUE;
         }));

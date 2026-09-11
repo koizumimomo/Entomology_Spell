@@ -63,13 +63,12 @@ public class SummonedBeeEntity extends Bee implements IMagicSummon
 
         this.targetSelector.addGoal(1, new SummonedBeeOwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new SummonedBeeOwnerHurtTargetGoal(this));
-        this.targetSelector.addGoal(3, new GenericHurtByTargetGoal(this, entity -> entity == this.getSummoner()).setAlertOthers());
+        this.targetSelector.addGoal(3, new GenericHurtByTargetGoal(this, entity -> io.entomology.entomology.util.SwarmCreatures.isSameOwnerChain(this, entity)).setAlertOthers());
         // Swarm members (Summon Bee Swarm) actively hunt nearby hostile mobs.
         // Alarm bees / requiem bees override isSwarmMember() to false, so they
         // keep their owner-reactive behaviour and do not wander off to attack.
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false,
-                target -> target != this.getSummoner()
-                        && SummonManager.getOwner(target) != this.getSummoner()
+                target -> !io.entomology.entomology.util.SwarmCreatures.isSameOwnerChain(this, target)
                         && (target instanceof Enemy
                         || target.hasEffect(io.entomology.entomology.registries.EffectRegistry.SWARM_EXEMPTION.get())))
         {

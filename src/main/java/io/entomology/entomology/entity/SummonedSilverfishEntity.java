@@ -65,13 +65,12 @@ public class SummonedSilverfishEntity extends Silverfish implements IMagicSummon
         this.targetSelector.addGoal(1, new GenericOwnerHurtByTargetGoal(this, this::getSummoner));
         this.targetSelector.addGoal(2, new GenericOwnerHurtTargetGoal(this, this::getSummoner));
         this.targetSelector.addGoal(3, new GenericCopyOwnerTargetGoal(this, this::getSummoner));
-        this.targetSelector.addGoal(4, new GenericHurtByTargetGoal(this, entity -> entity == this.getSummoner()).setAlertOthers());
+        this.targetSelector.addGoal(4, new GenericHurtByTargetGoal(this, entity -> io.entomology.entomology.util.SwarmCreatures.isSameOwnerChain(this, entity)).setAlertOthers());
         this.targetSelector.addGoal(5, new GenericProtectOwnerTargetGoal(this, this::getSummoner));
 
         // Auto-hunt nearby hostile mobs (like summoned swarm bees do).
         this.targetSelector.addGoal(6, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, false,
-                target -> target != this.getSummoner()
-                        && SummonManager.getOwner(target) != this.getSummoner()
+                target -> !io.entomology.entomology.util.SwarmCreatures.isSameOwnerChain(this, target)
                         && target instanceof Enemy
         ));
 
