@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "entomology_spell:item/shiraori_s_fang"
+  }
+}

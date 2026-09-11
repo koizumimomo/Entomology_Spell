@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "variant=normal": {"model": "entomology_spell:block/insect_egg"},
+    "variant=purple": {"model": "entomology_spell:block/insect_egg_purple"}
+  }
+}

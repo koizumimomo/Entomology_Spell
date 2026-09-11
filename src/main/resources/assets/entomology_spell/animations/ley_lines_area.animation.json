@@ -1,0 +1,23 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.ley_lines_area.spin": {
+			"loop": true,
+			"animation_length": 6,
+			"bones": {
+				"lay": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"6.0": [0, -360, 0]
+					}
+				},
+				"small": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"6.0": [0, 360, 0]
+					}
+				}
+			}
+		}
+	}
+}
