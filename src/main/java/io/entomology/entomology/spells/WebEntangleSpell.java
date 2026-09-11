@@ -10,6 +10,7 @@ import io.redspace.ironsspellbooks.api.spells.CastSource;
 import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
 import io.redspace.ironsspellbooks.api.util.Utils;
+import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
 import io.redspace.ironsspellbooks.capabilities.magic.TargetEntityCastData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -19,6 +20,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -83,7 +85,34 @@ public class WebEntangleSpell extends AbstractSpell
     @Override
     public boolean checkPreCastConditions(Level level, int spellLevel, LivingEntity entity, MagicData playerMagicData)
     {
-        return Utils.preCastTargetHelper(level, entity, playerMagicData, this, 32, 0.35f);
+        // Filter out allies so mob casters (e.g. Shiraori) never web their own
+        // brood: the raycast in preCastTargetHelper would otherwise hit a spider
+        // standing between her and the enemy.
+        return Utils.preCastTargetHelper(level, entity, playerMagicData, this, 32, 0.35f, true, target -> {
+            if (target == entity)
+                return false;
+            if (entity instanceof Mob)
+            {
+                Entity casterOwner = SummonManager.getOwner(entity);
+                if (casterOwner != null)
+                {
+                    if (target.getUUID().equals(casterOwner.getUUID()))
+                        return false;
+                    Entity targetOwner = SummonManager.getOwner(target);
+                    if (targetOwner != null)
+                    {
+                        if (targetOwner.getUUID().equals(casterOwner.getUUID()))
+                            return false;
+                        // Transitive: target owned by a summon whose owner is
+                        // the same player (nest spiders → Shiraori → player)
+                        Entity grandOwner = SummonManager.getOwner(targetOwner);
+                        if (grandOwner != null && grandOwner.getUUID().equals(casterOwner.getUUID()))
+                            return false;
+                    }
+                }
+            }
+            return true;
+        });
     }
 
     @Override

@@ -10,18 +10,26 @@ import io.redspace.ironsspellbooks.api.spells.CastSource;
 import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
 import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
+import io.redspace.ironsspellbooks.capabilities.magic.PlayerRecasts;
+import io.redspace.ironsspellbooks.capabilities.magic.RecastInstance;
+import io.redspace.ironsspellbooks.capabilities.magic.RecastResult;
 import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
+import io.redspace.ironsspellbooks.capabilities.magic.SummonedEntitiesCastData;
+import io.redspace.ironsspellbooks.api.spells.ICastDataSerializable;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Summons a swarm of crimson mosquitoes (Alex's Mobs). They dive-bite targets
@@ -87,28 +95,63 @@ public class SummonMosquitoSwarmSpell extends AbstractSpell
     }
 
     @Override
+    public int getRecastCount(int spellLevel, LivingEntity entity)
+    {
+        return 2;
+    }
+
+    @Override
+    public ICastDataSerializable getEmptyCastData()
+    {
+        return new SummonedEntitiesCastData();
+    }
+
+    @Override
+    public void onRecastFinished(ServerPlayer serverPlayer, RecastInstance recastInstance, RecastResult recastResult, ICastDataSerializable castDataSerializable)
+    {
+        if (SummonManager.recastFinishedHelper(serverPlayer, recastInstance, recastResult, castDataSerializable))
+        {
+            super.onRecastFinished(serverPlayer, recastInstance, recastResult, castDataSerializable);
+        }
+    }
+
+    @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData)
     {
-        if (world instanceof net.minecraft.server.level.ServerLevel)
+        if (world instanceof net.minecraft.server.level.ServerLevel serverLevel)
         {
-            int count = this.getSwarmSize(spellLevel);
-            for (int i = 0; i < count; i++)
-            {
-                double angle = Math.toRadians(entity.getYRot() + world.getRandom().nextFloat() * 60.0F - 30.0F)
-                        + (Math.PI * 2 / count) * i;
-                double xOffset = Math.cos(angle) * 2.0D;
-                double zOffset = Math.sin(angle) * 2.0D;
-                SummonedMosquitoEntity mosquito = new SummonedMosquitoEntity(world, entity);
-                mosquito.moveTo(entity.getX() + xOffset, entity.getY() + 1.2D, entity.getZ() + zOffset,
-                        (float) Math.toDegrees(angle) + 180.0F, 0.0F);
-                world.addFreshEntity(mosquito);
-                SummonManager.initSummon(entity, mosquito, SUMMON_TIME,
-                        new io.redspace.ironsspellbooks.capabilities.magic.SummonedEntitiesCastData());
-            }
+            PlayerRecasts recasts = playerMagicData.getPlayerRecasts();
 
-            MagicManager.spawnParticles(world, ParticleTypes.CRIMSON_SPORE,
-                    entity.getX(), entity.getY() + 1.5D, entity.getZ(),
-                    30, 1.0D, 0.8D, 1.0D, 0.08D, false);
+            if (!recasts.hasRecastForSpell(this))
+            {
+                SummonedEntitiesCastData castData = new SummonedEntitiesCastData();
+                int count = this.getSwarmSize(spellLevel);
+                for (int i = 0; i < count; i++)
+                {
+                    double angle = Math.toRadians(entity.getYRot() + world.getRandom().nextFloat() * 60.0F - 30.0F)
+                            + (Math.PI * 2 / count) * i;
+                    double xOffset = Math.cos(angle) * 2.0D;
+                    double zOffset = Math.sin(angle) * 2.0D;
+                    SummonedMosquitoEntity mosquito = new SummonedMosquitoEntity(world, entity);
+                    mosquito.moveTo(entity.getX() + xOffset, entity.getY() + 1.2D, entity.getZ() + zOffset,
+                            (float) Math.toDegrees(angle) + 180.0F, 0.0F);
+                    double baseHealth = mosquito.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).getBaseValue();
+                    mosquito.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(
+                            baseHealth + this.getSpellPower(spellLevel, entity) * 2.0D + (spellLevel - 1) * 5.0D);
+                    mosquito.setHealth(mosquito.getMaxHealth());
+                    world.addFreshEntity(mosquito);
+                    SummonManager.initSummon(entity, mosquito, SUMMON_TIME, castData);
+                }
+
+                RecastInstance recastInstance = new RecastInstance(
+                        this.getSpellId(), spellLevel, this.getRecastCount(spellLevel, entity),
+                        SUMMON_TIME, castSource, castData);
+                recasts.addRecast(recastInstance, playerMagicData);
+
+                MagicManager.spawnParticles(world, ParticleTypes.CRIMSON_SPORE,
+                        entity.getX(), entity.getY() + 1.5D, entity.getZ(),
+                        30, 1.0D, 0.8D, 1.0D, 0.08D, false);
+            }
         }
 
         super.onCast(world, spellLevel, entity, castSource, playerMagicData);

@@ -2,6 +2,7 @@ package io.entomology.entomology;
 
 import com.mojang.logging.LogUtils;
 import io.entomology.entomology.registries.AttributeRegistry;
+import io.entomology.entomology.registries.BlockRegistry;
 import io.entomology.entomology.registries.CreativeTabRegistry;
 import io.entomology.entomology.registries.EffectRegistry;
 import io.entomology.entomology.registries.ItemRegistry;
@@ -10,6 +11,8 @@ import io.entomology.entomology.registries.SoundRegistry;
 import io.entomology.entomology.registries.SpellRegistry;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -33,6 +36,10 @@ public class EntomologyMod
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     // Create a Deferred Register to hold EntityTypes (summonable insects, etc.)
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
+    // Create a Deferred Register for Blocks
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
+    // Create a Deferred Register for Block Entity Types
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
 
     public EntomologyMod(FMLJavaModLoadingContext context)
     {
@@ -45,6 +52,9 @@ public class EntomologyMod
         ITEMS.register(modEventBus);
         // Register the Deferred Register to the mod event bus so entities get registered
         ENTITIES.register(modEventBus);
+        // Register blocks and block entities
+        BLOCKS.register(modEventBus);
+        BLOCK_ENTITIES.register(modEventBus);
 
         // Register our schools of magic into Iron's Spells 'n Spellbooks
         SchoolRegistry.register(modEventBus);
@@ -62,6 +72,8 @@ public class EntomologyMod
         ItemRegistry.init();
         // Force entity registration to happen now (before registry events fire)
         io.entomology.entomology.registries.EntityRegistry.init();
+        // Force block registration to happen now (before registry events fire)
+        BlockRegistry.init();
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

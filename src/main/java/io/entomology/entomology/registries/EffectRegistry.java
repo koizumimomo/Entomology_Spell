@@ -1,6 +1,7 @@
 package io.entomology.entomology.registries;
 
 import io.entomology.entomology.EntomologyMod;
+import io.entomology.entomology.effect.ButterflyLiftEffect;
 import io.entomology.entomology.effect.ChaoticStingerEffect;
 import io.entomology.entomology.effect.ChildWrathEffect;
 import io.entomology.entomology.effect.InfatuatedEffect;
@@ -8,13 +9,18 @@ import io.entomology.entomology.effect.InsectKinshipEffect;
 import io.entomology.entomology.effect.InsectPheromoneEffect;
 import io.entomology.entomology.effect.NestDurationEffect;
 import io.entomology.entomology.effect.ParasiteEffect;
+import io.entomology.entomology.effect.ParasiticBreathEffect;
 import io.entomology.entomology.effect.QueenBeeEffect;
+import io.entomology.entomology.effect.QueensMajestyEffect;
 import io.entomology.entomology.effect.ReproductiveDesireEffect;
+import io.entomology.entomology.effect.ShiraoriAttendantEffect;
 import io.entomology.entomology.effect.SummonedAlarmBeeEffect;
 import io.entomology.entomology.effect.SummonedBeeSwarmEffect;
 import io.entomology.entomology.effect.SummonedCockroachDanceEffect;
 import io.entomology.entomology.effect.SwarmAegisEffect;
 import io.entomology.entomology.effect.SwarmAidEffect;
+import io.entomology.entomology.effect.SwarmCallEffect;
+import io.entomology.entomology.effect.SwarmExemptionEffect;
 import io.entomology.entomology.effect.SwarmWillEffect;
 import io.entomology.entomology.effect.SwarmWrathEffect;
 import io.entomology.entomology.effect.SweetheartEffect;
@@ -60,6 +66,19 @@ public class EffectRegistry
     public static final RegistryObject<MobEffect> REPRODUCTIVE_DESIRE = MOB_EFFECTS.register("reproductive_desire", ReproductiveDesireEffect::new);
     public static final RegistryObject<MobEffect> INSECT_KINSHIP = MOB_EFFECTS.register("insect_kinship", InsectKinshipEffect::new);
     public static final RegistryObject<MobEffect> NEST_DURATION = MOB_EFFECTS.register("nest_duration", NestDurationEffect::new);
+    // Marks a target as fair game for insects: bypasses Insect Kinship protection
+    public static final RegistryObject<MobEffect> SWARM_EXEMPTION = MOB_EFFECTS.register("swarm_exemption", SwarmExemptionEffect::new);
+    // Silverfish counterpart of Chaotic Stinger: Hunger + stacking Slowness on silverfish bites
+    public static final RegistryObject<MobEffect> PARASITIC_BREATH = MOB_EFFECTS.register("parasitic_breath", ParasiticBreathEffect::new);
+    // Taking damage may summon retaliation bees while active
+    public static final RegistryObject<MobEffect> SWARM_CALL = MOB_EFFECTS.register("swarm_call", SwarmCallEffect::new);
+    // Butterfly lift: raises the target into the air for fall damage (Summon Butterfly spell)
+    public static final RegistryObject<MobEffect> BUTTERFLY_LIFT = MOB_EFFECTS.register("butterfly_lift", ButterflyLiftEffect::new);
+    // Visible aura icon on the True Queen Crown wearer (the aura itself buffs nearby summons)
+    public static final RegistryObject<MobEffect> QUEENS_MAJESTY = MOB_EFFECTS.register("queens_majesty", QueensMajestyEffect::new);
+    // Ritual marker applied to a spider by Shiraori's Fang: non-insect hostiles are
+    // taunted onto it; on expiry the spider becomes a branded attendant (scroll drop)
+    public static final RegistryObject<MobEffect> SHIRAORI_ATTENDANT = MOB_EFFECTS.register("shiraori_attendant", ShiraoriAttendantEffect::new);
 
     public static void register(IEventBus eventBus)
     {

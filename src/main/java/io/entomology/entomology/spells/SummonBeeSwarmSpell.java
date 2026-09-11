@@ -11,16 +11,24 @@ import io.redspace.ironsspellbooks.api.spells.CastSource;
 import io.redspace.ironsspellbooks.api.spells.CastType;
 import io.redspace.ironsspellbooks.api.spells.SpellRarity;
 import io.redspace.ironsspellbooks.api.util.Utils;
+import io.redspace.ironsspellbooks.capabilities.magic.MagicManager;
+import io.redspace.ironsspellbooks.capabilities.magic.PlayerRecasts;
+import io.redspace.ironsspellbooks.capabilities.magic.RecastInstance;
+import io.redspace.ironsspellbooks.capabilities.magic.RecastResult;
 import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
+import io.redspace.ironsspellbooks.capabilities.magic.SummonedEntitiesCastData;
+import io.redspace.ironsspellbooks.api.spells.ICastDataSerializable;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -102,47 +110,67 @@ public class SummonBeeSwarmSpell extends AbstractSpell
     }
 
     @Override
+    public int getRecastCount(int spellLevel, LivingEntity entity)
+    {
+        return 2;
+    }
+
+    @Override
+    public ICastDataSerializable getEmptyCastData()
+    {
+        return new SummonedEntitiesCastData();
+    }
+
+    @Override
+    public void onRecastFinished(ServerPlayer serverPlayer, RecastInstance recastInstance, RecastResult recastResult, ICastDataSerializable castDataSerializable)
+    {
+        if (SummonManager.recastFinishedHelper(serverPlayer, recastInstance, recastResult, castDataSerializable))
+        {
+            serverPlayer.removeEffect(EffectRegistry.SUMMONED_BEE_SWARM.get());
+            serverPlayer.removeEffect(EffectRegistry.QUEEN_BEE.get());
+            super.onRecastFinished(serverPlayer, recastInstance, recastResult, castDataSerializable);
+        }
+    }
+
+    @Override
     public void onCast(Level world, int spellLevel, LivingEntity entity, CastSource castSource, MagicData playerMagicData)
     {
         int count = this.getSummonCount(spellLevel, entity);
 
-        // Count surviving swarm members. Casting the spell again while some are alive
-        // tops the swarm back up to full strength instead of resummoning from scratch.
-        // Alarm bees (Bee Alarm) and requiem bees (Bee Requiem) share the SummonManager
-        // owner and the SummonedBeeEntity base class but are NOT swarm members -
-        // counting them here used to block the swarm from summoning anything.
-        int alive = 0;
         if (world instanceof ServerLevel serverLevel)
         {
-            for (UUID uuid : SummonManager.getSummons(entity))
+            PlayerRecasts recasts = playerMagicData.getPlayerRecasts();
+
+            // First cast: summon the swarm and create a recast instance so a
+            // second cast (or timeout) auto-dismisses all swarm members.
+            if (!recasts.hasRecastForSpell(this))
             {
-                Entity existing = serverLevel.getEntity(uuid);
-                if (existing instanceof SummonedBeeEntity bee && bee.isAlive() && bee.isSwarmMember())
-                    alive++;
+                SummonedEntitiesCastData castData = new SummonedEntitiesCastData();
+
+                for (int i = 0; i < count; i++)
+                {
+                    SummonedBeeEntity bee = new SummonedBeeEntity(world, entity);
+                    Vec3 offset = new Vec3(Utils.getRandomScaled(2.0), 0.5, Utils.getRandomScaled(2.0));
+                    bee.moveTo(entity.getEyePosition().add(offset));
+                    bee.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getBeeDamage(spellLevel, entity));
+                    bee.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.3D * 1.8D);
+                    double baseHealth = bee.getAttribute(Attributes.MAX_HEALTH).getBaseValue();
+                    bee.getAttribute(Attributes.MAX_HEALTH).setBaseValue(
+                            baseHealth + this.getSpellPower(spellLevel, entity) * 2.0D + (spellLevel - 1) * 4.0D);
+                    bee.setHealth(bee.getMaxHealth());
+                    world.addFreshEntity(bee);
+                    SummonManager.initSummon(entity, bee, SUMMON_TIME, castData);
+                }
+
+                entity.addEffect(new MobEffectInstance(EffectRegistry.SUMMONED_BEE_SWARM.get(), SUMMON_TIME, 0, false, false, true));
+                entity.addEffect(new MobEffectInstance(EffectRegistry.QUEEN_BEE.get(), SUMMON_TIME, 0, false, false, true));
+
+                RecastInstance recastInstance = new RecastInstance(
+                        this.getSpellId(), spellLevel, this.getRecastCount(spellLevel, entity),
+                        SUMMON_TIME, castSource, castData);
+                recasts.addRecast(recastInstance, playerMagicData);
             }
         }
-
-        for (int i = alive; i < count; i++)
-        {
-            // Own registered entity type: works even in modpacks that disable
-            // natural spawning or remove the vanilla bee entirely. Summon AI
-            // (follow owner, counter-attack, buff lifetime) lives on the entity.
-            SummonedBeeEntity bee = new SummonedBeeEntity(world, entity);
-            Vec3 offset = new Vec3(Utils.getRandomScaled(2.0), 0.5, Utils.getRandomScaled(2.0));
-            bee.moveTo(entity.getEyePosition().add(offset));
-            // Scale sting damage with spell power
-            bee.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(this.getBeeDamage(spellLevel, entity));
-            // 1.8x vanilla bee speed so the swarm can keep up with its targets
-            bee.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.3D * 1.8D);
-            world.addFreshEntity(bee);
-            // Track ownership without a fixed expiration; the swarm's lifetime is
-            // governed by the Summoned Bee Swarm buff on the owner.
-            SummonManager.setOwner(bee, entity);
-        }
-
-        // Refreshing these buffs extends the swarm's life on recast
-        entity.addEffect(new MobEffectInstance(EffectRegistry.SUMMONED_BEE_SWARM.get(), SUMMON_TIME, 0, false, false, true));
-        entity.addEffect(new MobEffectInstance(EffectRegistry.QUEEN_BEE.get(), SUMMON_TIME, 0, false, false, true));
 
         super.onCast(world, spellLevel, entity, castSource, playerMagicData);
     }

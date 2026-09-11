@@ -2,10 +2,14 @@ package io.entomology.entomology.registries;
 
 import io.entomology.entomology.EntomologyMod;
 import io.entomology.entomology.item.BeeIncarnationArmorItem;
+import io.entomology.entomology.item.ButterflySpiritItem;
+import io.entomology.entomology.item.ButterflyWingsItem;
 import io.entomology.entomology.item.LootItem;
 import io.entomology.entomology.item.QueenBeeCrownArmorItem;
+import io.entomology.entomology.item.ShiraoriFangItem;
 import io.entomology.entomology.item.SwarmArmorItem;
 import io.entomology.entomology.item.SwarmArmorMaterial;
+import io.entomology.entomology.item.TrueQueenCrownArmorItem;
 import io.entomology.entomology.item.WeaverSpiderCheliceraeArmorItem;
 import io.redspace.ironsspellbooks.item.SpellBook;
 import io.redspace.ironsspellbooks.item.UpgradeOrbItem;
@@ -20,6 +24,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.RegistryObject;
 
 /**
@@ -89,6 +94,42 @@ public class ItemRegistry
     // Staff
     public static final RegistryObject<Item> SWARM_STAFF = EntomologyMod.ITEMS.register("swarm_staff",
             () -> new StaffItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE), SWARM_STAFF_TIER));
+
+    // Butterfly Spirit: crafting ingredient for the True Queen Crown (from Butterfly Princess trades)
+    public static final RegistryObject<Item> BUTTERFLY_SPIRIT = EntomologyMod.ITEMS.register("butterfly_spirit",
+            () -> new ButterflySpiritItem(new Item.Properties().rarity(Rarity.EPIC).fireResistant()));
+
+    // Shiraori's Fang: right-click a spider to begin the Attendant ritual;
+    // a branded attendant spider drops the Summon Shiraori scroll on death
+    public static final RegistryObject<Item> SHIRAORI_S_FANG = EntomologyMod.ITEMS.register("shiraori_s_fang",
+            () -> new ShiraoriFangItem(new Item.Properties().rarity(Rarity.RARE).stacksTo(1).fireResistant()));
+
+    // True Queen Crown: upgraded Queen Bee Crown that radiates the Queen's Majesty aura
+    public static final RegistryObject<Item> TRUE_QUEEN_CROWN = registerArmor("true_queen_crown", ArmorItem.Type.HELMET, Rarity.EPIC, TrueQueenCrownArmorItem::new, 300.0, 0.15);
+
+    // Spawn eggs for naturally-spawning / creative-spawnable butterfly entities
+    public static final RegistryObject<Item> BUTTERFLY_SPAWN_EGG = EntomologyMod.ITEMS.register("butterfly_spawn_egg",
+            () -> new ForgeSpawnEggItem(() -> EntityRegistry.BUTTERFLY.get(), 0x6B8EFF, 0x1E1E1E, new Item.Properties()));
+    public static final RegistryObject<Item> NPC_BUTTERFLY_PRINCESS_SPAWN_EGG = EntomologyMod.ITEMS.register("npc_butterfly_princess_spawn_egg",
+            () -> new ForgeSpawnEggItem(() -> EntityRegistry.NPC_BUTTERFLY_PRINCESS.get(), 0xFF9FCF, 0xFFE1A3, new Item.Properties()));
+
+    // Spawn eggs for v1.5.0 new entities (cicada, bug beetle, shiraori, guardian spider)
+    public static final RegistryObject<Item> CICADA_SPAWN_EGG = EntomologyMod.ITEMS.register("cicada_spawn_egg",
+            () -> new ForgeSpawnEggItem(() -> EntityRegistry.CICADA.get(), 0x4A7C3A, 0xC0C0C0, new Item.Properties()));
+    public static final RegistryObject<Item> BUG_BEETLE_SPAWN_EGG = EntomologyMod.ITEMS.register("bug_beetle_spawn_egg",
+            () -> new ForgeSpawnEggItem(() -> EntityRegistry.BUG_BEETLE.get(), 0x3D2817, 0x1A1A1A, new Item.Properties()));
+    public static final RegistryObject<Item> SHIRAORI_SPAWN_EGG = EntomologyMod.ITEMS.register("shiraori_spawn_egg",
+            () -> new ForgeSpawnEggItem(() -> EntityRegistry.SHIRAORI.get(), 0xFFFFFF, 0x800080, new Item.Properties()));
+    public static final RegistryObject<Item> GUARDIAN_SPIDER_SPAWN_EGG = EntomologyMod.ITEMS.register("guardian_spider_spawn_egg",
+            () -> new ForgeSpawnEggItem(() -> EntityRegistry.GUARDIAN_SPIDER.get(), 0x2F1B14, 0x8B0000, new Item.Properties()));
+
+    // Butterfly Wings: Curios back-slot accessory that grants flight. Two
+    // colour variants (blue / white), each with its own GeckoLib geo/texture.
+    // Animation is reused from the butterfly entity.
+    public static final RegistryObject<Item> BUTTERFLY_WINGS_BLUE = EntomologyMod.ITEMS.register("butterfly_wings_blue",
+            () -> new ButterflyWingsItem(new Item.Properties().rarity(Rarity.EPIC).fireResistant().stacksTo(1)));
+    public static final RegistryObject<Item> BUTTERFLY_WINGS_WHITE = EntomologyMod.ITEMS.register("butterfly_wings_white",
+            () -> new ButterflyWingsItem(new Item.Properties().rarity(Rarity.EPIC).fireResistant().stacksTo(1)));
 
     private interface ArmorFactory
     {
