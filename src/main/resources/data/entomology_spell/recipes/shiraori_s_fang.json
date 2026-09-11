@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WZW",
+    "EKE",
+    "WZW"
+  ],
+  "key": {
+    "W": {
+      "item": "minecraft:cobweb"
+    },
+    "Z": {
+      "item": "entomology_spell:spider_venom_gland"
+    },
+    "E": {
+      "item": "minecraft:spider_eye"
+    },
+    "K": {
+      "item": "entomology_spell:insect_crystal"
+    }
+  },
+  "result": {
+    "item": "entomology_spell:shiraori_s_fang",
+    "count": 1
+  }
+}
