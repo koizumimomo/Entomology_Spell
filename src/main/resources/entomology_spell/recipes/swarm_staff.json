@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " DK",
+    " MD",
+    "M  "
+  ],
+  "key": {
+    "D": {
+      "item": "entomology_spell:spider_venom_gland"
+    },
+    "K": {
+      "item": "entomology_spell:insect_crystal"
+    },
+    "M": {
+      "item": "entomology_spell:vine_wrapped_stick"
+    }
+  },
+  "result": {
+    "item": "entomology_spell:swarm_staff",
+    "count": 1
+  }
+}

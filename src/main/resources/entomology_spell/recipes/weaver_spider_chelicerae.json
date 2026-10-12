@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DKD",
+    "DWD",
+    "D D"
+  ],
+  "key": {
+    "D": {
+      "item": "entomology_spell:spider_venom_gland"
+    },
+    "K": {
+      "item": "entomology_spell:insect_crystal"
+    },
+    "W": {
+      "item": "minecraft:cobweb"
+    }
+  },
+  "result": {
+    "item": "entomology_spell:weaver_spider_chelicerae",
+    "count": 1
+  }
+}

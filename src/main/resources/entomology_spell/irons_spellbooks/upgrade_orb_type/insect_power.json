@@ -1,0 +1,9 @@
+{
+  "amount": 0.05,
+  "attribute": "entomology_spell:insect_spell_power",
+  "containerItem": {
+    "Count": 1,
+    "id": "entomology_spell:swarm_upgrade_orb"
+  },
+  "operation": "MULTIPLY_BASE"
+}
