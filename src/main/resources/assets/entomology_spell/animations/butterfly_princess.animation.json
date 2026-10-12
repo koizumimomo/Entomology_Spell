@@ -104,13 +104,12 @@
 			}
 		},
 		"animation.butterfly_princess.attack": {
-			"loop": false,
 			"animation_length": 0.5,
 			"bones": {
 				"handupright": {
 					"rotation": {
 						"0.0": [0, 0, 0],
-						"0.25": [52.0054, 7.3637, -15.3649],
+						"0.25": [-40.4946, 7.3637, -15.3649],
 						"0.5": [0, 0, 0]
 					}
 				},
@@ -124,7 +123,6 @@
 			}
 		},
 		"animation.butterfly_princess.attack1": {
-			"loop": false,
 			"animation_length": 0.75,
 			"bones": {
 				"legleft": {
@@ -151,7 +149,7 @@
 				"handdownright": {
 					"rotation": {
 						"0.0": [0, 0, 0],
-						"0.5": [71, 0, 0],
+						"0.5": [-54, 0, 0],
 						"0.75": [0, 0, 0]
 					}
 				},
@@ -165,7 +163,7 @@
 				"handupright": {
 					"rotation": {
 						"0.0": [0, 0, 0],
-						"0.5": [81.2225, 10.134, 13.7212],
+						"0.5": [-43.7775, 10.134, 13.7212],
 						"0.75": [0, 0, 0]
 					}
 				},
@@ -198,11 +196,10 @@
 			"bones": {
 				"base": {
 					"rotation": {
-						"0.0": [-22, 0, 0]
+						"0.0": [-22, 0, 0],
+						"0.9167": [23, 0, 0]
 					},
-					"position": {
-						"0.0": [0, 4, 0]
-					}
+					"position": [0, 4, 0]
 				},
 				"legleft": {
 					"rotation": {
