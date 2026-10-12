@@ -57,6 +57,7 @@ public class ClientSetup
         event.registerEntityRenderer(EntityRegistry.LEY_LINE_AREA.get(),
                 io.entomology.entomology.entity.LeyLineAreaRenderer::new);
         event.registerEntityRenderer(EntityRegistry.BEE_STINGER.get(), BeeStingerRenderer::new);
+        event.registerEntityRenderer(EntityRegistry.CICADA_STING.get(), BeeStingerRenderer::new);
         event.registerEntityRenderer(EntityRegistry.BEE_REQUIEM.get(), BeeRequiemRenderer::new);
         event.registerEntityRenderer(EntityRegistry.SPIDER_NEST.get(), SpiderNestRenderer::new);
         // Particle-only visual for the one-shot Swarm Aid firefly

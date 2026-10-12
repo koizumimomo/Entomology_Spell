@@ -128,23 +128,60 @@ public class GuardianSpiderEntity extends PathfinderMob implements software.bern
     }
 
     /**
-     * UUID-based ally check (entity identity comparisons are unreliable after
-     * reloads/dimension changes): the spider's brood mother Shiraori, the
-     * summoning player, other guardian spiders, Shiraori's nests brood, and any
-     * other summon sharing one of those owners are all friendly.
+     * Ally check, ordered from most to least robust:
+     * <ol>
+     *   <li><b>Resolution-free brood markers</b> — both this spider and every
+     *       bug hatched from Shiraori's eggs carry the player's and Shiraori's
+     *       UUIDs in persistent data (see
+     *       {@code InsectEggBlockEntity#stampBrood}). These survive SummonManager
+     *       owner-resolution failures (owner offline, unloaded, other dimension).</li>
+     *   <li><b>SummonManager ownership chain</b> — transitive walk via
+     *       {@code SwarmCreatures.isSameOwnerChain} catches nest spiders
+     *       (spider → nest's owner Shiraori → player) and any other summon
+     *       sharing an ancestor.</li>
+     *   <li><b>Direct parent checks</b> — the brood mother, the summoning
+     *       player, and the brood mother's own summoner as a third anchor.</li>
+     * </ol>
      */
     public boolean isAlly(LivingEntity target)
     {
         if (io.entomology.entomology.util.SwarmCreatures.isShiraoriAttendant(target))
             return true;
+        if (target instanceof ShiraoriEntity || target instanceof GuardianSpiderEntity)
+            return true;
+
+        UUID broodMotherId = getOwnerUUID(); // Shiraori, set at spawn, resolution-free
+        CompoundTag targetData = target.getPersistentData();
+        if (broodMotherId != null)
+        {
+            if (target.getUUID().equals(broodMotherId))
+                return true;
+            if (targetData.hasUUID(io.entomology.entomology.block.InsectEggBlockEntity.BROOD_SHIRAORI_KEY)
+                    && targetData.getUUID(io.entomology.entomology.block.InsectEggBlockEntity.BROOD_SHIRAORI_KEY).equals(broodMotherId))
+                return true;
+        }
+        CompoundTag myData = this.getPersistentData();
+        if (myData.hasUUID(io.entomology.entomology.block.InsectEggBlockEntity.BROOD_OWNER_KEY))
+        {
+            UUID myOwnerId = myData.getUUID(io.entomology.entomology.block.InsectEggBlockEntity.BROOD_OWNER_KEY);
+            // The summoning player herself, and any sibling brood bug
+            if (target.getUUID().equals(myOwnerId))
+                return true;
+            if (targetData.hasUUID(io.entomology.entomology.block.InsectEggBlockEntity.BROOD_OWNER_KEY)
+                    && targetData.getUUID(io.entomology.entomology.block.InsectEggBlockEntity.BROOD_OWNER_KEY).equals(myOwnerId))
+                return true;
+        }
+
+        // Transitive SummonManager ownership chain (nest spiders, ice spider, …)
+        if (io.entomology.entomology.util.SwarmCreatures.isSameOwnerChain(this, target))
+            return true;
+
         LivingEntity broodMother = getOwnerEntity();
         Entity casterEntity = SummonManager.getOwner(this);
         LivingEntity caster = casterEntity instanceof LivingEntity le ? le : null;
         if (broodMother != null && target.getUUID().equals(broodMother.getUUID()))
             return true;
         if (caster != null && target.getUUID().equals(caster.getUUID()))
-            return true;
-        if (target instanceof ShiraoriEntity || target instanceof GuardianSpiderEntity)
             return true;
         Entity targetOwnerEntity = SummonManager.getOwner(target);
         LivingEntity targetOwner = targetOwnerEntity instanceof LivingEntity le2 ? le2 : null;
@@ -154,6 +191,13 @@ public class GuardianSpiderEntity extends PathfinderMob implements software.bern
                 return true;
             if (broodMother != null && targetOwner.getUUID().equals(broodMother.getUUID()))
                 return true;
+            if (broodMother != null)
+            {
+                // Target owned by the brood mother's summoner (the player)
+                Entity broodOwner = SummonManager.getOwner(broodMother);
+                if (broodOwner != null && targetOwner.getUUID().equals(broodOwner.getUUID()))
+                    return true;
+            }
         }
         return this.isAlliedTo(target);
     }

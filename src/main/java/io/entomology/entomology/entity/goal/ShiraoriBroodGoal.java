@@ -201,6 +201,9 @@ public class ShiraoriBroodGoal extends Goal
         {
             LivingEntity owner = (LivingEntity) SummonManager.getOwner(this.mob);
             egg.setOwner((owner != null ? owner : this.mob).getUUID());
+            // Record the brood mother too, so hatched bugs can be stamped with
+            // both UUIDs (player + Shiraori) for resolution-free ally checks.
+            egg.setShiraori(this.mob.getUUID());
             egg.setChanged();
         }
         serverLevel.playSound(null, target, SoundEvents.SPIDER_STEP, SoundSource.HOSTILE, 0.6F, 0.8F);
@@ -304,5 +307,10 @@ public class ShiraoriBroodGoal extends Goal
         serverLevel.addFreshEntity(guardian);
         LivingEntity owner = (LivingEntity) SummonManager.getOwner(this.mob);
         SummonManager.setOwner(guardian, owner != null ? owner : this.mob);
+        // Stamp the resolution-free brood markers (player + Shiraori UUIDs) so
+        // this guardian's ally checks keep working even when SummonManager
+        // owner resolution fails (owner offline, unloaded, other dimension).
+        io.entomology.entomology.block.InsectEggBlockEntity.stampBrood(guardian,
+                (owner != null ? owner : this.mob).getUUID(), this.mob.getUUID());
     }
 }

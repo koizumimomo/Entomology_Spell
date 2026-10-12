@@ -1,5 +1,6 @@
 package io.entomology.entomology.entity;
 
+import com.github.alexthe666.alexsmobs.entity.EntityCentipedeBody;
 import com.github.alexthe666.alexsmobs.entity.EntityCentipedeHead;
 import io.entomology.entomology.registries.EntityRegistry;
 import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
@@ -11,6 +12,7 @@ import io.redspace.ironsspellbooks.entity.mobs.goals.GenericOwnerHurtTargetGoal;
 import io.redspace.ironsspellbooks.entity.mobs.goals.GenericProtectOwnerTargetGoal;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -166,5 +168,93 @@ public class SummonedCentipedeEntity extends EntityCentipedeHead implements IMag
     {
         super.tick();
         SummonedRestorationHelper.handleRestoredDespawn(this);
+        // Alex's head tick rebuilds its body chain every tick while getChild()
+        // is null. If, well after spawning, the chain is still missing (the
+        // head's own addFreshEntity calls silently failed — e.g. the segments
+        // landed in a chunk that is not fully loaded), force-load the segment
+        // area and rebuild the chain ourselves so the player does not end up
+        // with a lone head. The head skips its own build while getChild() is
+        // non-null, so this cannot duplicate segments.
+        if (!this.level().isClientSide && !this.isRemoved()
+                && this.tickCount > 20 && this.tickCount % 20 == 0 && this.getChild() == null)
+        {
+            rebuildMissingBodyChain();
+        }
+    }
+
+    /**
+     * Cached handle on Alex's Mobs' private head {@code parts} array. The head
+     * only repositions segments listed in that array, so a manual rebuild must
+     * refresh it too. Alex's Mobs' own classes are not obfuscated at runtime,
+     * so the field name is stable.
+     */
+    @Nullable
+    private static final java.lang.reflect.Field PARTS_FIELD = initPartsField();
+
+    @Nullable
+    private static java.lang.reflect.Field initPartsField()
+    {
+        try
+        {
+            java.lang.reflect.Field field = EntityCentipedeHead.class.getDeclaredField("parts");
+            field.setAccessible(true);
+            return field;
+        }
+        catch (ReflectiveOperationException e)
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Server-side replica of {@link EntityCentipedeHead}'s segment-chain build
+     * (createBody → setParent → setBodyIndex → child links → addFreshEntity),
+     * with the segment chunks force-loaded first and the head's private
+     * {@code parts} array refreshed so the head keeps repositioning the live
+     * segments afterwards.
+     */
+    private void rebuildMissingBodyChain()
+    {
+        ServerLevel serverLevel = (ServerLevel) this.level();
+        LivingEntity prev = this;
+        net.minecraft.world.phys.Vec3 prevPos = this.position();
+        float backOffset = 0.45F;
+        int count = Math.max(1, this.getSegmentCount());
+        java.util.List<EntityCentipedeBody> chain = new java.util.ArrayList<>(count);
+        for (int i = 0; i < count; i++)
+        {
+            EntityCentipedeBody body = this.createBody(prev, i == count - 1);
+            body.setParent(prev);
+            body.setBodyIndex(i);
+            if (prev == this)
+            {
+                this.setChildId(body.getUUID());
+            }
+            else if (prev instanceof EntityCentipedeBody prevBody)
+            {
+                prevBody.setChildId(body.getUUID());
+            }
+            net.minecraft.world.phys.Vec3 bodyPos = body.tickMultipartPosition(this.getId(), backOffset, prevPos,
+                    this.getXRot(), this.getRingBuffer(4 * i + 4, 1.0F), false);
+            body.setPos(bodyPos);
+            // The head's own build silently loses segments when their chunk is
+            // not loaded; make sure that cannot happen here.
+            serverLevel.getChunk(net.minecraft.util.Mth.floor(bodyPos.x) >> 4, net.minecraft.util.Mth.floor(bodyPos.z) >> 4);
+            serverLevel.addFreshEntity(body);
+            chain.add(body);
+            prev = body;
+            backOffset = body.getBackOffset();
+            prevPos = body.position();
+        }
+        if (PARTS_FIELD != null)
+        {
+            try
+            {
+                PARTS_FIELD.set(this, chain.toArray(new EntityCentipedeBody[0]));
+            }
+            catch (IllegalAccessException ignored)
+            {
+            }
+        }
     }
 }

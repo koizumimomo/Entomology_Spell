@@ -86,8 +86,8 @@ public class SpiderNestEntity extends LivingEntity implements GeoEntity
         this.spellLevel = spellLevel;
         this.spellPower = spellPower;
         this.castData = castData;
-        // Nest health scales with spell level (+8 each) and spell power (1:1)
-        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(10.0D + spellLevel * 8.0D + spellPower);
+        // Nest health scales with spell level (+8 each) and spell power (1:1), then x1.5
+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((10.0D + spellLevel * 8.0D + spellPower) * 1.5D);
         this.setHealth(this.getMaxHealth());
     }
 
@@ -106,8 +106,8 @@ public class SpiderNestEntity extends LivingEntity implements GeoEntity
 
     public static AttributeSupplier.Builder createLivingAttributes()
     {
-        // 10 health = 5 hearts
-        return LivingEntity.createLivingAttributes().add(Attributes.MAX_HEALTH, 10.0D);
+        // 15 health = 7.5 hearts (base 10 x1.5)
+        return LivingEntity.createLivingAttributes().add(Attributes.MAX_HEALTH, 15.0D);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class SpiderNestEntity extends LivingEntity implements GeoEntity
         this.spellLevel = compound.getInt("SpellLevel");
         this.spellPower = compound.getFloat("SpellPower");
         // Re-apply the scaled max health (NBT load bypasses the casting constructor)
-        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(10.0D + this.spellLevel * 8.0D + this.spellPower);
+        this.getAttribute(Attributes.MAX_HEALTH).setBaseValue((10.0D + this.spellLevel * 8.0D + this.spellPower) * 1.5D);
         this.setHealth(this.getMaxHealth());
     }
 

@@ -237,6 +237,7 @@ public class ShiraoriEntity extends NeutralWizard implements IMagicSummon
     {
         if (!this.level().isClientSide)
         {
+            this.dismissGuardianSpiders();
             io.redspace.ironsspellbooks.capabilities.magic.MagicManager.spawnParticles(
                     this.level(), ParticleTypes.HAPPY_VILLAGER,
                     this.getX(), this.getY() + 0.5D, this.getZ(),
@@ -245,9 +246,35 @@ public class ShiraoriEntity extends NeutralWizard implements IMagicSummon
         }
     }
 
+    /**
+     * Takes her guardian spiders with her — they exist to protect her, so they
+     * must not linger as stray hostiles after she leaves (either through the
+     * spell's natural expiry or through death).
+     */
+    private void dismissGuardianSpiders()
+    {
+        if (this.level().isClientSide)
+        {
+            return;
+        }
+        this.level().getEntitiesOfClass(GuardianSpiderEntity.class,
+                this.getBoundingBox().inflate(48.0D),
+                guardian -> guardian.isAlive() && guardian.getOwnerEntity() == this)
+                .forEach(guardian ->
+                {
+                    io.redspace.ironsspellbooks.capabilities.magic.MagicManager.spawnParticles(
+                            this.level(), ParticleTypes.PORTAL,
+                            guardian.getX(), guardian.getY() + guardian.getBbHeight() * 0.5D, guardian.getZ(),
+                            16, guardian.getBbWidth() * 0.5D, guardian.getBbHeight() * 0.4D, guardian.getBbWidth() * 0.5D,
+                            0.05D, false);
+                    guardian.discard();
+                });
+    }
+
     @Override
     public void die(DamageSource damageSource)
     {
+        this.dismissGuardianSpiders();
         this.onDeathHelper();
         super.die(damageSource);
     }

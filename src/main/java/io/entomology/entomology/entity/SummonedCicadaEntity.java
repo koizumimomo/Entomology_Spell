@@ -44,6 +44,8 @@ public class SummonedCicadaEntity extends CicadaEntity implements IMagicSummon
     {
         // Keep the parent's flying wander + look goals
         super.registerGoals();
+        // Shoot trail-less sting projectiles at the current target
+        this.goalSelector.addGoal(2, new CicadaStingAttackGoal(this));
         // Follow the owner
         this.goalSelector.addGoal(3, new GenericFollowOwnerGoal(this, this::getSummoner, 1.0, 8.0F, 3.0F, true, 16.0F));
         // Auto-attack nearby hostiles (excluding owner and owner's summons)
@@ -51,6 +53,64 @@ public class SummonedCicadaEntity extends CicadaEntity implements IMagicSummon
                 target -> !io.entomology.entomology.util.SwarmCreatures.isSameOwnerChain(this, target)
                         && target instanceof Enemy
         ));
+    }
+
+    /**
+     * Fires a trail-less cicada sting (3-6 damage + Slowness) at the current
+     * target every 2 seconds, within 16 blocks and line of sight.
+     */
+    static class CicadaStingAttackGoal extends net.minecraft.world.entity.ai.goal.Goal
+    {
+        private static final int ATTACK_INTERVAL = 40; // 2 seconds
+        private static final double RANGE_SQR = 16.0D * 16.0D;
+
+        private final SummonedCicadaEntity cicada;
+        private int cooldown = 0;
+
+        CicadaStingAttackGoal(SummonedCicadaEntity cicada)
+        {
+            this.cicada = cicada;
+        }
+
+        @Override
+        public boolean canUse()
+        {
+            LivingEntity target = this.cicada.getTarget();
+            return target != null && target.isAlive();
+        }
+
+        @Override
+        public boolean canContinueToUse()
+        {
+            return this.canUse();
+        }
+
+        @Override
+        public void tick()
+        {
+            LivingEntity target = this.cicada.getTarget();
+            if (target == null)
+                return;
+
+            if (this.cooldown > 0)
+            {
+                this.cooldown--;
+                return;
+            }
+
+            if (this.cicada.distanceToSqr(target) > RANGE_SQR || !this.cicada.hasLineOfSight(target))
+            {
+                this.cooldown = 10; // re-check soon
+                return;
+            }
+
+            this.cooldown = ATTACK_INTERVAL;
+            CicadaStingProjectile sting = new CicadaStingProjectile(this.cicada.level(), this.cicada);
+            sting.setDamage(3.0F + this.cicada.getRandom().nextFloat() * 3.0F);
+            sting.moveTo(this.cicada.getX(), this.cicada.getY() + 0.3D, this.cicada.getZ());
+            sting.shoot(target.getEyePosition().subtract(sting.position()).normalize());
+            this.cicada.level().addFreshEntity(sting);
+        }
     }
 
     // ---- IMagicSummon lifecycle ----

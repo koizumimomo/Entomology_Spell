@@ -1,12 +1,9 @@
 package io.entomology.entomology.block;
 
+import io.entomology.entomology.compat.AlexEggHatches;
 import io.entomology.entomology.entity.SummonedBugBeetleEntity;
 import io.entomology.entomology.entity.SummonedCicadaEntity;
-import io.entomology.entomology.entity.SummonedCentipedeEntity;
-import io.entomology.entomology.entity.SummonedCockroach;
-import io.entomology.entomology.entity.SummonedMosquitoEntity;
 import io.entomology.entomology.entity.SummonedSilverfishEntity;
-import io.entomology.entomology.entity.SummonedWarpedMoscoEntity;
 import io.entomology.entomology.registries.BlockRegistry;
 import io.redspace.ironsspellbooks.capabilities.magic.SummonManager;
 import net.minecraft.core.BlockPos;
@@ -51,14 +48,26 @@ import java.util.function.BiConsumer;
  * <p>Without Alex's Mobs only the first three regular entries are in the pool,
  * so each of them gets 1/3 ≈ 33% of the hatch roll (the 5% warped mosco slice
  * is dropped because that mob also requires Alex's Mobs).
+ *
+ * <p>All Alex-only spawn actions live in {@link AlexEggHatches}, which is
+ * loaded solely when alexsmobs is present; this BlockEntity is registered
+ * unconditionally and must never directly reference an Alex-derived class.
  */
 public class InsectEggBlockEntity extends BlockEntity
 {
-    /** Probability that a hatch produces a Summoned Warped Mosco (when Alex's Mobs is loaded). */
-    private static final double WARPED_MOSCO_CHANCE = 0.05D;
+    /**
+     * Persistent-data keys stamped onto every hatched bug. They record both
+     * the casting player and the brood mother Shiraori by UUID, so ally
+     * checks (e.g. GuardianSpiderEntity) never depend on resolving entities
+     * through SummonManager at decision time.
+     */
+    public static final String BROOD_OWNER_KEY = "EntomologyBroodOwner";
+    public static final String BROOD_SHIRAORI_KEY = "EntomologyBroodShiraori";
 
     private int hatchTimer;
     private UUID ownerUUID;
+    @Nullable
+    private UUID shiraoriUUID;
 
     public InsectEggBlockEntity(BlockPos pos, BlockState state)
     {
@@ -75,6 +84,24 @@ public class InsectEggBlockEntity extends BlockEntity
     public UUID getOwnerUUID()
     {
         return this.ownerUUID;
+    }
+
+    /** Records the Shiraori that laid this egg (the brood mother). */
+    public void setShiraori(@Nullable UUID shiraoriUUID)
+    {
+        this.shiraoriUUID = shiraoriUUID;
+    }
+
+    /**
+     * Stamps the brood markers onto a freshly hatched bug so guardians can
+     * recognise it as family without resolving SummonManager owners.
+     */
+    public static void stampBrood(Entity bug, @Nullable UUID ownerUUID, @Nullable UUID shiraoriUUID)
+    {
+        if (ownerUUID != null)
+            bug.getPersistentData().putUUID(BROOD_OWNER_KEY, ownerUUID);
+        if (shiraoriUUID != null)
+            bug.getPersistentData().putUUID(BROOD_SHIRAORI_KEY, shiraoriUUID);
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, InsectEggBlockEntity entity)
@@ -107,10 +134,12 @@ public class InsectEggBlockEntity extends BlockEntity
         RandomSource rng = serverLevel.getRandom();
 
         // 5%: Summoned Warped Mosco (only with Alex's Mobs; falls through to
-        // the regular pool when Alex's Mobs is not installed).
-        if (alexLoaded && rng.nextDouble() < WARPED_MOSCO_CHANCE)
+        // the regular pool when Alex's Mobs is not installed). The call into
+        // AlexEggHatches is short-circuited by alexLoaded so its class is
+        // never resolved without Alex's Mobs.
+        if (alexLoaded && AlexEggHatches.tryWarpedMosco(serverLevel, spawnPos, owner, this.shiraoriUUID, this.ownerUUID, rng))
         {
-            spawnWarpedMosco(serverLevel, spawnPos, owner);
+            // Hatched into the rare slice; nothing else to do.
         }
         else
         {
@@ -138,22 +167,22 @@ public class InsectEggBlockEntity extends BlockEntity
         spawners.add((sl, p) -> spawnCicada(sl, p, owner));
         spawners.add((sl, p) -> spawnBeetle(sl, p, owner));
         spawners.add((sl, p) -> spawnSilverfish(sl, p, owner));
-        // Alex's Mobs hatches
+        // Alex's Mobs hatches — the call is gated by alexLoaded, so without
+        // Alex's Mobs the AlexEggHatches class is never loaded.
         if (alexLoaded)
         {
-            spawners.add((sl, p) -> spawnCentipede(sl, p, owner));
-            spawners.add((sl, p) -> spawnCockroach(sl, p, owner));
-            spawners.add((sl, p) -> spawnCrimsonMosquito(sl, p, owner));
+            AlexEggHatches.addRegularEntries(spawners, owner, this.shiraoriUUID, this.ownerUUID);
         }
         return spawners;
     }
 
-    // ---- Spawn helpers ----
+    // ---- Spawn helpers (Alex-free pool only) ----
 
     private void spawnCicada(ServerLevel sl, Vec3 p, @Nullable LivingEntity owner)
     {
         SummonedCicadaEntity cicada = new SummonedCicadaEntity(sl, owner);
         cicada.moveTo(p);
+        stampBrood(cicada, this.ownerUUID, this.shiraoriUUID);
         sl.addFreshEntity(cicada);
     }
 
@@ -161,6 +190,7 @@ public class InsectEggBlockEntity extends BlockEntity
     {
         SummonedBugBeetleEntity beetle = new SummonedBugBeetleEntity(sl, owner);
         beetle.moveTo(p);
+        stampBrood(beetle, this.ownerUUID, this.shiraoriUUID);
         sl.addFreshEntity(beetle);
     }
 
@@ -174,40 +204,8 @@ public class InsectEggBlockEntity extends BlockEntity
         {
             SummonManager.setOwner(fish, owner);
         }
+        stampBrood(fish, this.ownerUUID, this.shiraoriUUID);
         sl.addFreshEntity(fish);
-    }
-
-    private void spawnCentipede(ServerLevel sl, Vec3 p, @Nullable LivingEntity owner)
-    {
-        SummonedCentipedeEntity centipede = new SummonedCentipedeEntity(sl, owner);
-        centipede.moveTo(p);
-        sl.addFreshEntity(centipede);
-    }
-
-    private void spawnCockroach(ServerLevel sl, Vec3 p, @Nullable LivingEntity owner)
-    {
-        // SummonedCockroach requires a non-null owner (it sets owner + spell level
-        // in its ctor). If for some reason owner is null, skip the spawn entirely
-        // rather than crashing — the egg still hatches and disappears.
-        if (owner == null)
-            return;
-        SummonedCockroach roach = new SummonedCockroach(sl, owner, 1);
-        roach.moveTo(p);
-        sl.addFreshEntity(roach);
-    }
-
-    private void spawnCrimsonMosquito(ServerLevel sl, Vec3 p, @Nullable LivingEntity owner)
-    {
-        SummonedMosquitoEntity mosquito = new SummonedMosquitoEntity(sl, owner);
-        mosquito.moveTo(p);
-        sl.addFreshEntity(mosquito);
-    }
-
-    private void spawnWarpedMosco(ServerLevel sl, Vec3 p, @Nullable LivingEntity owner)
-    {
-        SummonedWarpedMoscoEntity mosco = new SummonedWarpedMoscoEntity(sl, owner);
-        mosco.moveTo(p);
-        sl.addFreshEntity(mosco);
     }
 
     @Override
@@ -217,6 +215,8 @@ public class InsectEggBlockEntity extends BlockEntity
         tag.putInt("HatchTimer", this.hatchTimer);
         if (this.ownerUUID != null)
             tag.putUUID("OwnerUUID", this.ownerUUID);
+        if (this.shiraoriUUID != null)
+            tag.putUUID("ShiraoriUUID", this.shiraoriUUID);
     }
 
     @Override
@@ -226,5 +226,7 @@ public class InsectEggBlockEntity extends BlockEntity
         this.hatchTimer = tag.getInt("HatchTimer");
         if (tag.hasUUID("OwnerUUID"))
             this.ownerUUID = tag.getUUID("OwnerUUID");
+        if (tag.hasUUID("ShiraoriUUID"))
+            this.shiraoriUUID = tag.getUUID("ShiraoriUUID");
     }
 }

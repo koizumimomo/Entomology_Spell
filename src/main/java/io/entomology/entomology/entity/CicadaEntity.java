@@ -125,54 +125,55 @@ public class CicadaEntity extends PathfinderMob implements software.bernie.gecko
     public void tick()
     {
         super.tick();
-        if (!this.level().isClientSide)
-        {
-            // Area debuff every 20 ticks (1 second)
-            if (++this.debuffTimer >= 20)
-            {
-                this.debuffTimer = 0;
-                applyAreaDebuff();
-            }
-        }
+        // Area debuff (Slowness + Darkness aura) disabled: the cicada now attacks
+        // with trail-less sting projectiles instead (see SummonedCicadaEntity).
+        // if (!this.level().isClientSide)
+        // {
+        //     if (++this.debuffTimer >= 20)
+        //     {
+        //         this.debuffTimer = 0;
+        //         applyAreaDebuff();
+        //     }
+        // }
     }
 
-    private void applyAreaDebuff()
-    {
-        if (!(this.level() instanceof ServerLevel serverLevel))
-            return;
-
-        AABB aabb = this.getBoundingBox().inflate(6.0D);
-        List<LivingEntity> nearby = serverLevel.getEntitiesOfClass(LivingEntity.class, aabb,
-                e -> e != this && e.isAlive() && !e.isSpectator());
-
-        UUID ownerUUID = getOwnerUUID();
-        for (LivingEntity target : nearby)
-        {
-            // Skip owner
-            if (ownerUUID != null && target.getUUID().equals(ownerUUID))
-                continue;
-
-            // Skip same-owner summons
-            if (ownerUUID != null)
-            {
-                LivingEntity owner = (LivingEntity) SummonManager.getOwner(this);
-                if (owner != null && SummonManager.getOwner(target) == owner)
-                    continue;
-            }
-
-            // Skip entities with Insect Kinship (insect affinity)
-            if (target.hasEffect(io.entomology.entomology.registries.EffectRegistry.INSECT_KINSHIP.get()))
-                continue;
-
-            // Apply Slowness III and Darkness for 3 seconds (60 ticks)
-            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2, false, true, true));
-            // Darkness requires 1.19.4+ (1.20.1 has it)
-            target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 60, 0, false, true, true));
-        }
-
-        // Sound wave particle effect
-        serverLevel.sendParticles(ParticleTypes.SONIC_BOOM, this.getX(), this.getY() + 0.5, this.getZ(), 0, 0, 0, 0, 0);
-    }
+    // Disabled together with the tick() caller above.
+    // private void applyAreaDebuff()
+    // {
+    //     if (!(this.level() instanceof ServerLevel serverLevel))
+    //         return;
+    //
+    //     AABB aabb = this.getBoundingBox().inflate(6.0D);
+    //     List<LivingEntity> nearby = serverLevel.getEntitiesOfClass(LivingEntity.class, aabb,
+    //             e -> e != this && e.isAlive() && !e.isSpectator());
+    //
+    //     UUID ownerUUID = getOwnerUUID();
+    //     for (LivingEntity target : nearby)
+    //     {
+    //         // Skip owner
+    //         if (ownerUUID != null && target.getUUID().equals(ownerUUID))
+    //             continue;
+    //
+    //         // Skip same-owner summons
+    //         if (ownerUUID != null)
+    //         {
+    //             LivingEntity owner = (LivingEntity) SummonManager.getOwner(this);
+    //             if (owner != null && SummonManager.getOwner(target) == owner)
+    //                 continue;
+    //         }
+    //
+    //         // Skip entities with Insect Kinship (insect affinity)
+    //         if (target.hasEffect(io.entomology.entomology.registries.EffectRegistry.INSECT_KINSHIP.get()))
+    //             continue;
+    //
+    //         // Apply Slowness III and Darkness for 3 seconds (60 ticks)
+    //         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 2, false, true, true));
+    //         target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 60, 0, false, true, true));
+    //     }
+    //
+    //     // Sound wave particle effect
+    //     serverLevel.sendParticles(ParticleTypes.SONIC_BOOM, this.getX(), this.getY() + 0.5, this.getZ(), 0, 0, 0, 0, 0);
+    // }
 
     // GeckoLib
     @Override
