@@ -21,6 +21,8 @@
   "spell.entomology_spell.bee_alarm.guide": "Places alarm bees at fixed posts around you. They shoot bee stingers at hostile entities within 8 blocks. 1 bee at level 1, +1 per level. Lasts 15s at level 1, +7s per level. Benefits from Chaotic Stinger",
   "spell.entomology_spell.summon_ice_spider": "Summon Frost Spider",
   "spell.entomology_spell.summon_ice_spider.guide": "Summons a loyal frost spider that protects you and attacks your targets. Right-click the spider to ride it and steer it yourself. It climbs walls, pounces on enemies and web-grapples them in ice",
+  "spell.entomology_spell.spider_nest": "Spider Nest",
+  "spell.entomology_spell.spider_nest.guide": "Places a destructible spider nest at your feet that periodically spawns spiders to guard the area. The spiders protect the nest and you; higher levels make the nest tougher and longer-lived",
   "spell.entomology_spell.summon_cockroach_dance": "Summon Cockroach Dance Troupe",
   "spell.entomology_spell.summon_cockroach_dance.guide": "Summons a troupe of maraca-shaking cockroaches that dance around you. Their rhythm pulses regen, speed, haste and strength onto you and your allies nearby. Higher levels summon more roaches and stronger beats",
   "spell.entomology_spell.summon_mosquito_swarm": "Summon Mosquito Swarm",
@@ -182,6 +184,7 @@
   "item.entomology_spell.insect_egg": "Insect Egg",
 
   "block.entomology_spell.insect_egg": "Insect Egg",
+  "block.entomology_spell.floral_altar": "Flower of Emergence",
 
   "tooltip.entomology_spell.butterfly_wings": "When worn in the back slot: grants flight",
   "tooltip.entomology_spell.royal_jelly": "Dropped by bees slain by swarm school spells",

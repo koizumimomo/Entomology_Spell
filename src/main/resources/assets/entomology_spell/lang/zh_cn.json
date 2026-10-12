@@ -21,6 +21,8 @@
   "spell.entomology_spell.bee_alarm.guide": "在周围布置固定点位的警戒蜜蜂，使用小蜂刺攻击8格范围内的敌对生物。1级1只蜜蜂，每级多1只。1级持续15秒，每级增加7秒。可享受混乱蜂刺效果",
   "spell.entomology_spell.summon_ice_spider": "召唤冰霜蜘蛛",
   "spell.entomology_spell.summon_ice_spider.guide": "召唤一只忠诚的冰霜蜘蛛保护你并攻击你的目标。右键点击蜘蛛即可骑乘并亲自操纵方向。它会攀爬墙壁、扑咬敌人并用蛛网将其冰封擒拿",
+  "spell.entomology_spell.spider_nest": "蛛巢",
+  "spell.entomology_spell.spider_nest.guide": "在脚下放置一个可被破坏的蛛巢，周期性地产出蜘蛛守卫周围区域。蜘蛛会保护蛛巢与施法者，等级越高蛛巢越坚固、存活越久",
   "spell.entomology_spell.summon_cockroach_dance": "召唤蟑螂舞队",
   "spell.entomology_spell.summon_cockroach_dance.guide": "召唤一队摇着沙锤的蟑螂在你身边跳舞。它们的节奏会向周围的你和友军脉冲式施加生命恢复、速度、急迫与力量。等级越高舞队越大、节奏越强",
   "spell.entomology_spell.summon_mosquito_swarm": "召唤蚊群",
@@ -182,6 +184,7 @@
   "item.entomology_spell.insect_egg": "虫卵",
 
   "block.entomology_spell.insect_egg": "虫卵",
+  "block.entomology_spell.floral_altar": "羽化花",
 
   "tooltip.entomology_spell.butterfly_wings": "装备在背饰栏时：可以飞行",
   "tooltip.entomology_spell.royal_jelly": "使用虫群法术击杀蜜蜂时有概率掉落",
